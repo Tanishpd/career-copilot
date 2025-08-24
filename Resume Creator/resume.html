@@ -22,7 +22,7 @@
         @media print {
             body {
                 -webkit-print-color-adjust: exact; /* Chrome, Safari */
-                color-adjust: exact; /* Firefox */
+                print-color-adjust: exact; /* Standard property */
             }
             .no-print {
                 display: none !important;
@@ -259,7 +259,7 @@
 
                 if (title || company) {
                     hasExperience = true;
-                    const descHtml = desc.split('\\n').map(line => `<li>${line}</li>`).join('');
+                    const descHtml = desc.split('\n').map(line => `<li>${line}</li>`).join('');
                     experiencePreview.innerHTML += `
                         <div class="mb-4">
                             <div class="flex justify-between items-baseline">
