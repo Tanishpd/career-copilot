@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Template AI Resume Creator</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts (for various templates) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Lato:wght@400;700&family=Lora:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@400;700&family=Open+Sans:wght@400;700&family=Poppins:wght@400;600&family=Raleway:wght@400;700&family=Roboto+Slab:wght@400;700&family=Roboto:wght@400;500;700&family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <style>
+        /* Base styles */
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+        .no-print { /* This class is used to hide elements during printing */ }
+        #sidebar { transition: transform 0.3s ease-in-out; }
+        .modal-overlay { transition: opacity 0.3s ease-in-out; }
+
+        /* --- TEMPLATE STYLES --- */
+        /* Each template's styles are scoped to its class on the #resume-preview container */
+        #resume-preview {
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            /* Base font styles */
+            font-family: 'Inter', sans-serif;
+            color: #334155; /* slate-700 */
+        }
+
+        /* Template 1: Modern */
+        .template-modern { font-family: 'Poppins', sans-serif; }
+        .template-modern .header-name { color: #1e3a8a; } /* blue-800 */
+        .template-modern .section-title { color: #1e3a8a; border-color: #93c5fd; } /* blue-300 */
+        .template-modern .skill-badge { background-color: #dbeafe; color: #1e3a8a; } /* blue-100, blue-800 */
+
+        /* Template 2: Classic (Two-Column) */
+        .template-classic { font-family: 'Lora', serif; }
+        .template-classic .resume-grid { display: grid; grid-template-columns: 1fr 2.5fr; gap: 2rem; }
+        .template-classic .sidebar { background-color: #f8fafc; padding: 1.5rem; border-right: 1px solid #e2e8f0; }
+        .template-classic .header-name { color: #1e293b; text-align: left; } /* slate-800 */
+        .template-classic .section-title { color: #1e293b; border-color: #cbd5e1; } /* slate-300 */
+        .template-classic .skill-badge { background-color: #e2e8f0; color: #1e293b; } /* slate-200, slate-800 */
+        
+        /* Template 3: Minimalist */
+        .template-minimalist { font-family: 'Lato', sans-serif; }
+        .template-minimalist .header-name { color: #374151; font-weight: 400; } /* gray-700 */
+        .template-minimalist .section-title { color: #374151; border-color: #e5e7eb; letter-spacing: 2px; text-transform: uppercase; font-size: 0.9rem;}
+        .template-minimalist .skill-badge { border: 1px solid #d1d5db; color: #374151; } /* gray-300, gray-700 */
+
+        /* Template 4: Corporate */
+        .template-corporate { font-family: 'Roboto', sans-serif; }
+        .template-corporate .header { background-color: #0f172a; color: white; padding: 2rem; text-align: center; margin: -2.5rem -2.5rem 2rem -2.5rem; }
+        .template-corporate .header-name { color: white; }
+        .template-corporate .job-title { color: #94a3b8; } /* slate-400 */
+        .template-corporate .section-title { color: #0f172a; border-color: #0f172a; } /* slate-900 */
+        .template-corporate .skill-badge { background-color: #0f172a; color: white; } /* slate-900 */
+        
+        /* Template 5: Creative */
+        .template-creative { font-family: 'Raleway', sans-serif; }
+        .template-creative .header { text-align: right; }
+        .template-creative .header-name { color: #be185d; } /* pink-700 */
+        .template-creative .section-title { color: #be185d; border: none; text-align: right; }
+        .template-creative .section-content { border-right: 2px solid #f9a8d4; padding-right: 1rem; }
+        .template-creative .skill-badge { background-color: #fce7f3; color: #be185d; } /* pink-100, pink-700 */
+
+        /* Template 6: Technical */
+        .template-technical { font-family: 'Source Sans Pro', sans-serif; }
+        .template-technical .header-name { color: #047857; } /* emerald-700 */
+        .template-technical .section-title { color: #047857; border-color: #6ee7b7; } /* emerald-700, emerald-300 */
+        .template-technical .skill-badge { background-color: #d1fae5; color: #047857; } /* emerald-100, emerald-700 */
+        .template-technical .job-title { font-family: 'monospace'; }
+
+        /* Template 7: Academic */
+        .template-academic { font-family: 'Roboto Slab', serif; }
+        .template-academic .header-name { color: #7f1d1d; } /* red-900 */
+        .template-academic .section-title { color: #7f1d1d; border-color: #7f1d1d; }
+        .template-academic .skill-badge { background-color: #fee2e2; color: #7f1d1d; } /* red-100, red-900 */
+
+        /* Template 8: Bold (Dark Mode) */
+        .template-bold { background-color: #1f2937; color: #d1d5db; } /* gray-800, gray-300 */
+        .template-bold .header-name { color: #f9fafb; } /* gray-50 */
+        .template-bold .job-title, .template-bold .contact-info, .template-bold .text-slate-600, .template-bold .text-slate-500 { color: #9ca3af; } /* gray-400 */
+        .template-bold .section-title { color: #f9fafb; border-color: #4b5563; } /* gray-50, gray-600 */
+        .template-bold .skill-badge { background-color: #374151; color: #f9fafb; } /* gray-700, gray-50 */
+        
+        /* Template 9: Elegant */
+        .template-elegant { font-family: 'Open Sans', sans-serif; }
+        .template-elegant .header-name { color: #4c1d95; font-family: 'Montserrat', sans-serif; font-weight: 700; } /* violet-800 */
+        .template-elegant .section-title { color: #4c1d95; border-color: #ddd6fe; } /* violet-800, violet-200 */
+        .template-elegant .skill-badge { background-color: #ede9fe; color: #4c1d95; } /* violet-100, violet-800 */
+        
+        /* Template 10: Compact */
+        .template-compact { font-family: 'Inter', sans-serif; font-size: 0.9rem; line-height: 1.4; }
+        .template-compact .header-name { color: #1e40af; } /* blue-800 */
+        .template-compact .section-title { font-size: 1rem; color: #1e40af; border-color: #bfdbfe; }
+        .template-compact .skill-badge { font-size: 0.7rem; padding: 2px 8px; background-color: #dbeafe; color: #1e40af; }
+        .template-compact .space-y-6 > * + * { margin-top: 1rem; } /* reduce space between sections */
+
+        /* Print styles */
+        @media print {
+            body { -webkit-print-color-adjust: exact; color-adjust: exact; }
+            .no-print { display: none !important; }
+            #resume-wrapper { margin: 0; padding: 0; }
+            #resume-preview {
+                width: 100% !important; height: 100% !important;
+                box-shadow: none !important; border: none !important;
+                transform: scale(1) !important; margin: 0 !important; padding: 2rem !important;
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Main container -->
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar for Inputs -->
+        <aside id="sidebar" class="w-96 bg-white h-full overflow-y-auto p-6 shadow-lg z-20 absolute lg:relative transform -translate-x-full lg:translate-x-0 no-print">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-slate-900">Resume Details</h2>
+                <button id="close-sidebar-btn" class="lg:hidden text-slate-500 hover:text-slate-800"><i data-feather="x"></i></button>
+            </div>
+
+            <!-- Template Selector Button -->
+            <div class="mb-6">
+                <button id="template-selector-btn" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-300 flex items-center justify-center">
+                    <i data-feather="layout" class="mr-2"></i> Choose Template
+                </button>
+            </div>
+
+            <!-- Input sections as an accordion -->
+            <div class="space-y-2">
+                <!-- Personal Details -->
+                <details class="group" open>
+                    <summary class="flex justify-between items-center font-semibold p-2 cursor-pointer">Personal Details <i data-feather="chevron-down" class="group-open:rotate-180 transition-transform"></i></summary>
+                    <div class="p-4 border-t">
+                        <input type="text" id="name" placeholder="Full Name" class="p-2 border rounded w-full mb-2" oninput="updatePreview()">
+                        <input type="text" id="title" placeholder="Job Title" class="p-2 border rounded w-full mb-2" oninput="updatePreview()">
+                        <input type="email" id="email" placeholder="Email" class="p-2 border rounded w-full mb-2" oninput="updatePreview()">
+                        <input type="tel" id="phone" placeholder="Phone" class="p-2 border rounded w-full mb-2" oninput="updatePreview()">
+                        <input type="text" id="location" placeholder="Location" class="p-2 border rounded w-full mb-2" oninput="updatePreview()">
+                        <input type="url" id="linkedin" placeholder="LinkedIn URL" class="p-2 border rounded w-full" oninput="updatePreview()">
+                    </div>
+                </details>
+                <!-- Other sections: Summary, Experience, Education, Skills -->
+                <details class="group">
+                    <summary class="flex justify-between items-center font-semibold p-2 cursor-pointer">Summary <i data-feather="chevron-down" class="group-open:rotate-180 transition-transform"></i></summary>
+                    <div class="p-4 border-t"><textarea id="summary" placeholder="A brief professional summary..." class="p-2 border rounded w-full h-24" oninput="updatePreview()"></textarea></div>
+                </details>
+                <details class="group">
+                    <summary class="flex justify-between items-center font-semibold p-2 cursor-pointer">Experience <i data-feather="chevron-down" class="group-open:rotate-180 transition-transform"></i></summary>
+                    <div class="p-4 border-t"><div id="experience-forms"></div><button id="add-experience-btn" class="w-full mt-2 bg-slate-200 text-slate-700 py-2 rounded hover:bg-slate-300">Add Experience</button></div>
+                </details>
+                <details class="group">
+                    <summary class="flex justify-between items-center font-semibold p-2 cursor-pointer">Education <i data-feather="chevron-down" class="group-open:rotate-180 transition-transform"></i></summary>
+                    <div class="p-4 border-t"><div id="education-forms"></div><button id="add-education-btn" class="w-full mt-2 bg-slate-200 text-slate-700 py-2 rounded hover:bg-slate-300">Add Education</button></div>
+                </details>
+                <details class="group">
+                    <summary class="flex justify-between items-center font-semibold p-2 cursor-pointer">Skills <i data-feather="chevron-down" class="group-open:rotate-180 transition-transform"></i></summary>
+                    <div class="p-4 border-t"><input type="text" id="skills" placeholder="JavaScript, React, Python..." class="p-2 border rounded w-full" oninput="updatePreview()"><p class="text-xs text-slate-500 mt-1">Separate with commas.</p></div>
+                </details>
+            </div>
+        </aside>
+
+        <!-- Main Content Area for Resume Preview -->
+        <main class="flex-1 h-full overflow-y-auto p-4 lg:p-8">
+            <div class="fixed top-4 right-4 flex space-x-2 no-print z-10">
+                <button id="open-sidebar-btn" class="lg:hidden bg-white p-3 rounded-full shadow-md text-slate-600 hover:bg-slate-100"><i data-feather="menu"></i></button>
+                <button onclick="window.print()" class="bg-blue-600 text-white p-3 rounded-full shadow-md hover:bg-blue-700"><i data-feather="download"></i></button>
+            </div>
+            <div id="resume-wrapper" class="max-w-4xl mx-auto">
+                <div id="resume-preview" class="bg-white p-10 rounded-lg template-modern">
+                    <!-- Resume content will be dynamically generated here by JavaScript -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Template Selector Modal -->
+    <div id="template-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden no-print">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b flex justify-between items-center sticky top-0 bg-white">
+                <h3 class="text-2xl font-bold">Choose a Template</h3>
+                <button id="close-modal-btn" class="text-slate-500 hover:text-slate-800"><i data-feather="x-circle"></i></button>
+            </div>
+            <div id="template-gallery" class="p-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <!-- Template previews will be generated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- INITIALIZATION ---
+        feather.replace();
+        const templates = [
+            { id: 'template-modern', name: 'Modern', img: 'https://placehold.co/400x560/dbeafe/1e3a8a?text=Modern' },
+            { id: 'template-classic', name: 'Classic', img: 'https://placehold.co/400x560/f8fafc/1e293b?text=Classic' },
+            { id: 'template-minimalist', name: 'Minimalist', img: 'https://placehold.co/400x560/f3f4f6/374151?text=Minimalist' },
+            { id: 'template-corporate', name: 'Corporate', img: 'https://placehold.co/400x560/e2e8f0/0f172a?text=Corporate' },
+            { id: 'template-creative', name: 'Creative', img: 'https://placehold.co/400x560/fce7f3/be185d?text=Creative' },
+            { id: 'template-technical', name: 'Technical', img: 'https://placehold.co/400x560/d1fae5/047857?text=Technical' },
+            { id: 'template-academic', name: 'Academic', img: 'https://placehold.co/400x560/fee2e2/7f1d1d?text=Academic' },
+            { id: 'template-bold', name: 'Bold (Dark)', img: 'https://placehold.co/400x560/1f2937/f9fafb?text=Bold' },
+            { id: 'template-elegant', name: 'Elegant', img: 'https://placehold.co/400x560/ede9fe/4c1d95?text=Elegant' },
+            { id: 'template-compact', name: 'Compact', img: 'https://placehold.co/400x560/dbeafe/1e40af?text=Compact' }
+        ];
+        
+        // --- UI & MODAL LOGIC ---
+        const sidebar = document.getElementById('sidebar');
+        const openSidebarBtn = document.getElementById('open-sidebar-btn');
+        const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+        openSidebarBtn.addEventListener('click', () => sidebar.classList.remove('-translate-x-full'));
+        closeSidebarBtn.addEventListener('click', () => sidebar.classList.add('-translate-x-full'));
+
+        const modal = document.getElementById('template-modal');
+        const openModalBtn = document.getElementById('template-selector-btn');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        openModalBtn.addEventListener('click', () => modal.classList.remove('hidden'));
+        closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
+        
+        // Populate template gallery
+        const gallery = document.getElementById('template-gallery');
+        gallery.innerHTML = templates.map(t => `
+            <div class="cursor-pointer group" onclick="changeTemplate('${t.id}')">
+                <img src="${t.img}" alt="${t.name}" class="w-full h-auto object-cover rounded-lg border-2 border-transparent group-hover:border-blue-500 transition">
+                <p class="text-center font-semibold mt-2">${t.name}</p>
+            </div>
+        `).join('');
+        
+        // --- DYNAMIC FORM LOGIC ---
+        let experienceCount = 0, educationCount = 0;
+        const addExperienceBtn = document.getElementById('add-experience-btn');
+        const addEducationBtn = document.getElementById('add-education-btn');
+        addExperienceBtn.addEventListener('click', addExperienceForm);
+        addEducationBtn.addEventListener('click', addEducationForm);
+        
+        function addExperienceForm() {
+            experienceCount++;
+            const formHtml = `<div id="exp-entry-${experienceCount}" class="p-4 border rounded-md mb-4 relative bg-white"><button class="absolute top-2 right-2 text-red-500 hover:text-red-700" onclick="removeForm('exp-entry-${experienceCount}')"><i data-feather="trash-2" class="w-4 h-4"></i></button><input type="text" placeholder="Job Title" class="p-2 border rounded w-full mb-2 experience-title" oninput="updatePreview()"><input type="text" placeholder="Company" class="p-2 border rounded w-full mb-2 experience-company" oninput="updatePreview()"><textarea placeholder="Key responsibilities..." class="p-2 border rounded w-full h-20 experience-desc" oninput="updatePreview()"></textarea><div class="flex justify-between mt-2"><input type="text" placeholder="Location" class="p-2 border rounded w-1/2 mr-1 experience-location" oninput="updatePreview()"><input type="text" placeholder="Dates" class="p-2 border rounded w-1/2 ml-1 experience-dates" oninput="updatePreview()"></div></div>`;
+            document.getElementById('experience-forms').insertAdjacentHTML('beforeend', formHtml);
+            feather.replace();
+        }
+        function addEducationForm() {
+            educationCount++;
+            const formHtml = `<div id="edu-entry-${educationCount}" class="p-4 border rounded-md mb-4 relative bg-white"><button class="absolute top-2 right-2 text-red-500 hover:text-red-700" onclick="removeForm('edu-entry-${educationCount}')"><i data-feather="trash-2" class="w-4 h-4"></i></button><input type="text" placeholder="Degree" class="p-2 border rounded w-full mb-2 education-degree" oninput="updatePreview()"><input type="text" placeholder="Institution" class="p-2 border rounded w-full mb-2 education-institution" oninput="updatePreview()"><input type="text" placeholder="Year" class="p-2 border rounded w-full education-year" oninput="updatePreview()"></div>`;
+            document.getElementById('education-forms').insertAdjacentHTML('beforeend', formHtml);
+            feather.replace();
+        }
+        function removeForm(id) { document.getElementById(id).remove(); updatePreview(); }
+        
+        // --- TEMPLATE & PREVIEW LOGIC ---
+        function changeTemplate(templateId) {
+            const preview = document.getElementById('resume-preview');
+            preview.className = 'bg-white p-10 rounded-lg'; // Reset classes
+            preview.classList.add(templateId);
+            updatePreview();
+            modal.classList.add('hidden'); // Close modal after selection
+        }
+
+        function updatePreview() {
+            const preview = document.getElementById('resume-preview');
+            const currentTemplate = preview.className.split(' ').find(c => c.startsWith('template-'));
+            
+            // Gather all data from forms
+            const data = {
+                name: document.getElementById('name').value || 'Your Name',
+                title: document.getElementById('title').value || 'Job Title',
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                location: document.getElementById('location').value,
+                linkedin: document.getElementById('linkedin').value,
+                summary: document.getElementById('summary').value,
+                experiences: Array.from(document.querySelectorAll('#experience-forms > div')).map(e => ({
+                    title: e.querySelector('.experience-title').value,
+                    company: e.querySelector('.experience-company').value,
+                    desc: e.querySelector('.experience-desc').value,
+                    location: e.querySelector('.experience-location').value,
+                    dates: e.querySelector('.experience-dates').value,
+                })),
+                educations: Array.from(document.querySelectorAll('#education-forms > div')).map(e => ({
+                    degree: e.querySelector('.education-degree').value,
+                    institution: e.querySelector('.education-institution').value,
+                    year: e.querySelector('.education-year').value,
+                })),
+                skills: document.getElementById('skills').value.split(',').map(s => s.trim()).filter(Boolean)
+            };
+
+            // Render HTML based on the current template
+            preview.innerHTML = renderTemplate(currentTemplate, data);
+            feather.replace();
+        }
+        
+        function renderTemplate(templateId, data) {
+            // Helper function to create sections
+            const createSection = (title, content) => content ? `<div><h2 class="text-xl font-bold section-title border-b-2 pb-1 mb-3">${title}</h2><div class="section-content">${content}</div></div>` : '';
+
+            // Build content for each section
+            const summaryContent = data.summary ? `<p class="text-sm text-slate-700 leading-relaxed">${data.summary}</p>` : '';
+            const experienceContent = data.experiences.filter(e => e.title || e.company).map(e => `<div class="mb-4"><div class="flex justify-between items-baseline"><h3 class="text-lg font-bold">${e.title} <span class="text-md font-semibold text-slate-600">${e.company ? `at ${e.company}`: ''}</span></h3><p class="text-sm font-light text-slate-500">${e.dates}</p></div><p class="text-sm font-light text-slate-500 mb-1">${e.location}</p><ul class="list-disc list-inside text-sm text-slate-600 mt-1 space-y-1">${e.desc.split('\\n').map(l => `<li>${l}</li>`).join('')}</ul></div>`).join('');
+            const educationContent = data.educations.filter(e => e.degree || e.institution).map(e => `<div class="mb-2 flex justify-between items-baseline"><div><h3 class="text-lg font-bold">${e.degree}</h3><p class="text-md font-semibold text-slate-600">${e.institution}</p></div><p class="text-sm font-light text-slate-500">${e.year}</p></div>`).join('');
+            const skillsContent = data.skills.length > 0 ? `<div class="flex flex-wrap gap-2">${data.skills.map(s => `<span class="skill-badge text-sm font-semibold px-3 py-1 rounded-full">${s}</span>`).join('')}</div>` : '';
+
+            const contactInfo = [
+                { val: data.email, icon: 'mail', href: `mailto:${data.email}`},
+                { val: data.phone, icon: 'phone', href: `tel:${data.phone}`},
+                { val: data.location, icon: 'map-pin', href: '#'},
+                { val: data.linkedin, icon: 'linkedin', href: data.linkedin}
+            ].filter(c => c.val).map(c => `<a href="${c.href}" target="_blank" class="flex items-center space-x-1"><i data-feather="${c.icon}" class="w-4 h-4"></i><span>${c.val.replace(/^(https?:\/\/)?(www\.)?/, '')}</span></a>`).join('');
+
+            const mainContent = `
+                <div class="space-y-6">
+                    ${createSection('Summary', summaryContent)}
+                    ${createSection('Work Experience', experienceContent)}
+                    ${createSection('Education', educationContent)}
+                    ${createSection('Skills', skillsContent)}
+                </div>`;
+
+            // Handle different layouts
+            if (templateId === 'template-classic') {
+                return `
+                    <div class="resume-grid">
+                        <div class="sidebar">
+                            <div class="text-center">
+                                <h1 class="text-3xl font-bold header-name">${data.name}</h1>
+                                <p class="text-lg text-slate-600 job-title mt-1">${data.title}</p>
+                            </div>
+                            <div class="mt-8 space-y-4 contact-info text-sm">${contactInfo}</div>
+                        </div>
+                        <div class="main-content">${mainContent}</div>
+                    </div>`;
+            } else {
+                 return `
+                    <div class="header text-center border-b-2 pb-4">
+                        <h1 class="text-5xl font-bold header-name">${data.name}</h1>
+                        <p class="text-xl text-slate-600 job-title font-semibold mt-2">${data.title}</p>
+                        <div class="contact-info text-sm text-slate-500 mt-4 flex justify-center items-center flex-wrap gap-x-6 gap-y-2">${contactInfo}</div>
+                    </div>
+                    <div class="mt-8">${mainContent}</div>`;
+            }
+        }
+        
+        // --- INITIAL LOAD ---
+        addExperienceForm();
+        addEducationForm();
+        updatePreview();
+    </script>
+</body>
+</html>
