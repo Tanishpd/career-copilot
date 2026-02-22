@@ -1,0 +1,225 @@
+{% extends 'professor_dashboard.html' %}
+{% block body %}
+<div class="row align-items-center d-flex  justify-content-center">
+  <div class="col-12 mb-4">
+    <div class="card border-light shadow-sm components-section align-items-center d-flex  justify-content-center">
+      <div class="card-body align-items-center d-flex justify-content-center">
+        <div class="row mb-4">
+          <div class="col-lg-12 col-sm-16">
+            <h3 class="h3 text-center">GENERATE QUESTIONS & ANSWERS</h3>
+          </div>
+          <center><lottie-player src="https://assets3.lottiefiles.com/packages/lf20_6CrYF1.json"
+              background="transparent" speed="1" style="width: 400px; height: 300px;" loop autoplay></lottie-player>
+          </center>
+          <div class="card-body">
+            <form method="POST" action="test_generate">
+              <div class="mb-4">
+                <div class="form-group">
+                  <label class="h6">Choose Question Category</label>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="test_type" id="typeAptitude" value="aptitude"
+                      checked onchange="toggleTopic()">
+                    <label class="form-check-label" for="typeAptitude">
+                      Aptitude
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="test_type" id="typeCoding" value="coding"
+                      onchange="toggleTopic()">
+                    <label class="form-check-label" for="typeCoding">
+                      Coding
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="test_type" id="typeMixed" value="mixed"
+                      onchange="toggleTopic()">
+                    <label class="form-check-label" for="typeMixed">
+                      Mixed (Aptitude + Coding)
+                    </label>
+                  </div>
+                </div>
+
+                <div class="form-group" id="aptitudeTopicGroup">
+                  <label class="h6">Choose Aptitude Topic(s)</label>
+                  <div
+                    style="max-height: 200px; overflow-y: auto; border: 1px solid #ced4da; padding: 10px; border-radius: 4px;">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="aptitude_topic" value="Time and Work"
+                        id="topic1">
+                      <label class="form-check-label" for="topic1">Time and Work</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="aptitude_topic"
+                        value="Time, Speed and Distance" id="topic2">
+                      <label class="form-check-label" for="topic2">Time, Speed and Distance</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="aptitude_topic" value="Profit and Loss"
+                        id="topic3">
+                      <label class="form-check-label" for="topic3">Profit and Loss</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="aptitude_topic"
+                        value="Simple and Compound Interest" id="topic4">
+                      <label class="form-check-label" for="topic4">Simple and Compound Interest</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="aptitude_topic" value="Ratio and Proportion"
+                        id="topic5">
+                      <label class="form-check-label" for="topic5">Ratio and Proportion</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="aptitude_topic" value="Percentages"
+                        id="topic6">
+                      <label class="form-check-label" for="topic6">Percentages</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="aptitude_topic"
+                        value="Permutation and Combination" id="topic7">
+                      <label class="form-check-label" for="topic7">Permutation and Combination</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="aptitude_topic" value="Probability"
+                        id="topic8">
+                      <label class="form-check-label" for="topic8">Probability</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="aptitude_topic" value="Data Interpretation"
+                        id="topic9">
+                      <label class="form-check-label" for="topic9">Data Interpretation</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="aptitude_topic" value="Number Systems"
+                        id="topic10">
+                      <label class="form-check-label" for="topic10">Number Systems</label>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="codingTopicGroup" style="display: none;">
+                  <div class="form-group">
+                    <label class="h6" for="coding_category">Coding Category</label>
+                    <select class="form-control" id="coding_category" name="coding_category"
+                      onchange="checkCodingSubTopic()">
+                      <option value="" disabled selected>Select Category</option>
+                      <option value="DSA">Data Structures & Algorithms (DSA)</option>
+                      <option value="SQL">SQL</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group" id="dsaSubTopicGroup" style="display: none;">
+                    <label class="h6">DSA Sub-Topic(s)</label>
+                    <div
+                      style="max-height: 200px; overflow-y: auto; border: 1px solid #ced4da; padding: 10px; border-radius: 4px;">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="coding_subtopic" value="Array" id="dsa1">
+                        <label class="form-check-label" for="dsa1">Array</label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="coding_subtopic" value="String" id="dsa2">
+                        <label class="form-check-label" for="dsa2">String</label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="coding_subtopic" value="Linked List"
+                          id="dsa3">
+                        <label class="form-check-label" for="dsa3">Linked List</label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="coding_subtopic" value="Stack/Queue"
+                          id="dsa4">
+                        <label class="form-check-label" for="dsa4">Stack/Queue</label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="coding_subtopic" value="Tree/BST"
+                          id="dsa5">
+                        <label class="form-check-label" for="dsa5">Tree/BST</label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="coding_subtopic" value="Graph" id="dsa6">
+                        <label class="form-check-label" for="dsa6">Graph</label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="coding_subtopic"
+                          value="Dynamic Programming" id="dsa7">
+                        <label class="form-check-label" for="dsa7">Dynamic Programming</label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="coding_subtopic" value="Backtracking"
+                          id="dsa8">
+                        <label class="form-check-label" for="dsa8">Backtracking</label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="coding_subtopic" value="Greedy" id="dsa9">
+                        <label class="form-check-label" for="dsa9">Greedy</label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="coding_subtopic" value="Sorting/Searching"
+                          id="dsa10">
+                        <label class="form-check-label" for="dsa10">Sorting/Searching</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <script>
+                  function toggleTopic() {
+                    const isAptitude = document.getElementById('typeAptitude').checked;
+                    const isCoding = document.getElementById('typeCoding').checked;
+                    const isMixed = document.getElementById('typeMixed').checked;
+
+                    const aptitudeGroup = document.getElementById('aptitudeTopicGroup');
+                    const codingGroup = document.getElementById('codingTopicGroup');
+
+                    if (isAptitude) {
+                      aptitudeGroup.style.display = 'block';
+                      codingGroup.style.display = 'none';
+                    } else if (isCoding) {
+                      aptitudeGroup.style.display = 'none';
+                      codingGroup.style.display = 'block';
+                    } else if (isMixed) {
+                      aptitudeGroup.style.display = 'block';
+                      codingGroup.style.display = 'block';
+                    }
+                  }
+
+                  function checkCodingSubTopic() {
+                    var category = document.getElementById("coding_category").value;
+                    if (category === "DSA") {
+                      document.getElementById("dsaSubTopicGroup").style.display = "block";
+                    } else {
+                      document.getElementById("dsaSubTopicGroup").style.display = "none";
+                    }
+                  }
+                </script>
+
+                <div class="form-group">
+                  <label class="h6" for="noq">No of Questions</label>
+                  <input type="number" name="noq" class="form-control" placeholder="No. of Questions" min="1" max="20"
+                    required>
+                </div>
+
+                <input type="submit" class="btn btn-primary" value="Generate AI Questions">
+            </form>
+
+            <script>
+              function toggleTopic() {
+                const isAptitude = document.getElementById('typeAptitude').checked;
+                const aptitudeGroup = document.getElementById('aptitudeTopicGroup');
+                const codingGroup = document.getElementById('codingTopicGroup');
+
+                if (isAptitude) {
+                  aptitudeGroup.style.display = 'block';
+                  codingGroup.style.display = 'none';
+                } else {
+                  aptitudeGroup.style.display = 'none';
+                  codingGroup.style.display = 'block';
+                }
+              }
+            </script>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

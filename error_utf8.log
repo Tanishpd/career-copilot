@@ -1,0 +1,86 @@
+﻿python : 2026-02-07 13:12:01.163356: I 
+tensorflow/core/util/port.cc:153] 
+oneDNN custom operations are on. You 
+may see slightly different numerical 
+results due to floating-point round-off 
+errors from different computation 
+orders. To turn them off, set the 
+environment variable 
+`TF_ENABLE_ONEDNN_OPTS=0`.
+At line:1 char:25
++ .venv\Scripts\activate; python app.py 
+> error.log 2>&1
++                         
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecif 
+   ied: (2026-02-07 13:1...ONEDNN_OPTS  
+  =0`.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCom 
+   mandError
+ 
+2026-02-07 13:12:02.439111: I 
+tensorflow/core/util/port.cc:153] 
+oneDNN custom operations are on. You 
+may see slightly different numerical 
+results due to floating-point round-off 
+errors from different computation 
+orders. To turn them off, set the 
+environment variable 
+`TF_ENABLE_ONEDNN_OPTS=0`.
+WARNING:tensorflow:From E:\MyProctor.ai-
+AI-BASED-SMART-ONLINE-EXAMINATION-PROCTO
+RING-SYSYTEM-main\.venv\lib\site-package
+s\tf_keras\src\losses.py:2976: The name 
+tf.losses.sparse_softmax_cross_entropy 
+is deprecated. Please use tf.compat.v1.l
+osses.sparse_softmax_cross_entropy 
+instead.
+
+2026-02-07 13:12:05.094856: I tensorflow
+/core/platform/cpu_feature_guard.cc:210]
+ This TensorFlow binary is optimized to 
+use available CPU instructions in 
+performance-critical operations.
+To enable the following instructions: 
+SSE3 SSE4.1 SSE4.2 AVX AVX2 AVX_VNNI 
+FMA, in other operations, rebuild 
+TensorFlow with the appropriate 
+compiler flags.
+Traceback (most recent call last):
+  File "E:\MyProctor.ai-AI-BASED-SMART-O
+NLINE-EXAMINATION-PROCTORING-SYSYTEM-mai
+n\app.py", line 29, in <module>
+    import camera
+  File "E:\MyProctor.ai-AI-BASED-SMART-O
+NLINE-EXAMINATION-PROCTORING-SYSYTEM-mai
+n\camera.py", line 295, in <module>
+    landmark_model = 
+get_landmark_model()
+  File "E:\MyProctor.ai-AI-BASED-SMART-O
+NLINE-EXAMINATION-PROCTORING-SYSYTEM-mai
+n\face_landmarks.py", line 7, in 
+get_landmark_model
+    model = 
+keras.models.load_model(saved_model)
+  File "E:\MyProctor.ai-AI-BASED-SMART-O
+NLINE-EXAMINATION-PROCTORING-SYSYTEM-mai
+n\.venv\lib\site-packages\tf_keras\src\s
+aving\saving_api.py", line 301, in 
+load_model
+    return 
+legacy_sm_saving_lib.load_model(
+  File "E:\MyProctor.ai-AI-BASED-SMART-O
+NLINE-EXAMINATION-PROCTORING-SYSYTEM-mai
+n\.venv\lib\site-packages\tf_keras\src\u
+tils\traceback_utils.py", line 70, in 
+error_handler
+    raise e.with_traceback(filtered_tb) 
+from None
+  File "E:\MyProctor.ai-AI-BASED-SMART-O
+NLINE-EXAMINATION-PROCTORING-SYSYTEM-mai
+n\.venv\lib\site-packages\tf_keras\src\s
+aving\legacy\saved_model\load.py", line 
+255, in _generate_object_paths
+    for reference in object_graph_def.no
+des[current_node].children:
+IndexError: list index out of range

@@ -1,0 +1,68 @@
+
+[2026-02-21 19:43:28.458370] DEBUG LOGIN Attempt: Email='pavankumarps152@gmail.com', Type='teacher'
+[2026-02-21 19:43:28.944997] DEBUG LOGIN Rows Found: 1
+[2026-02-21 19:43:28.978384] DEBUG: Login Failed. Verified=False, PwdMatch=True
+
+[2026-02-21 19:54:21.127782] DEBUG LOGIN Attempt: Email='pavankumarps152@gmail.com', Type='teacher'
+[2026-02-21 19:54:21.222581] DEBUG LOGIN Rows Found: 1
+
+[2026-02-21 20:04:52.405038] DEBUG LOGIN Attempt: Email='pavankumarps152@gmail.com', Type='teacher'
+[2026-02-21 20:04:53.061875] DEBUG LOGIN Rows Found: 1
+[2026-02-21 20:05:15.444463] DEBUG: Verification Result: {'verified': True, 'distance': 0.470276, 'threshold': 0.68, 'confidence': 72.86, 'model': 'VGG-Face', 'detector_backend': 'opencv', 'similarity_metric': 'cosine', 'facial_areas': {'img1': {'x': 142, 'y': 114, 'w': 148, 'h': 148, 'left_eye': (242, 174), 'right_eye': (187, 172)}, 'img2': {'x': 155, 'y': 119, 'w': 113, 'h': 113, 'left_eye': (233, 164), 'right_eye': (185, 162)}}, 'time': 22.33}
+
+[2026-02-21 20:18:58.111091] DEBUG LOGIN Attempt: Email='pavankumarps152@gmail.com', Type='teacher'
+[2026-02-21 20:18:58.127333] DEBUG LOGIN Rows Found: 1
+[2026-02-21 20:19:21.301405] DEBUG: Verification Result: {'verified': True, 'distance': 0.502337, 'threshold': 0.68, 'confidence': 69.02, 'model': 'VGG-Face', 'detector_backend': 'opencv', 'similarity_metric': 'cosine', 'facial_areas': {'img1': {'x': 149, 'y': 97, 'w': 175, 'h': 175, 'left_eye': (267, 167), 'right_eye': (203, 162)}, 'img2': {'x': 155, 'y': 119, 'w': 113, 'h': 113, 'left_eye': (233, 164), 'right_eye': (185, 162)}}, 'time': 22.79}
+
+[2026-02-21 20:40:14.075405] DEBUG LOGIN Attempt: Email='eng22cs0117@dsu.edu.in', Type='student'
+[2026-02-21 20:40:14.109666] DEBUG LOGIN Rows Found: 1
+[2026-02-21 20:40:26.009258] DEBUG: Verification Result: {'verified': True, 'distance': 0.601525, 'threshold': 0.68, 'confidence': 57.92, 'model': 'VGG-Face', 'detector_backend': 'opencv', 'similarity_metric': 'cosine', 'facial_areas': {'img1': {'x': 172, 'y': 59, 'w': 131, 'h': 131, 'left_eye': (262, 109), 'right_eye': (212, 105)}, 'img2': {'x': 159, 'y': 122, 'w': 113, 'h': 113, 'left_eye': (238, 166), 'right_eye': (190, 164)}}, 'time': 11.81}
+
+[2026-02-21 21:12:00.239126] DEBUG LOGIN Attempt: Email='pavankumarps152@gmail.com', Type='teacher'
+[2026-02-21 21:12:00.268428] DEBUG LOGIN Rows Found: 1
+[2026-02-21 21:12:09.433303] DEBUG: Verification Result: {'verified': True, 'distance': 0.526338, 'threshold': 0.68, 'confidence': 66.19, 'model': 'VGG-Face', 'detector_backend': 'opencv', 'similarity_metric': 'cosine', 'facial_areas': {'img1': {'x': 205, 'y': 146, 'w': 139, 'h': 139, 'left_eye': (302, 199), 'right_eye': (247, 197)}, 'img2': {'x': 155, 'y': 119, 'w': 113, 'h': 113, 'left_eye': (233, 164), 'right_eye': (185, 162)}}, 'time': 9.08}
+
+[2026-02-22 00:25:42.752774] DEBUG LOGIN Attempt: Email='eng22cs0117@dsu.edu.in', Type='student'
+[2026-02-22 00:25:42.778304] DEBUG LOGIN Rows Found: 1
+[2026-02-22 00:25:56.448496] DEBUG: Verification Result: {'verified': False, 'distance': 0.883673, 'threshold': 0.68, 'confidence': 3.34, 'model': 'VGG-Face', 'detector_backend': 'opencv', 'similarity_metric': 'cosine', 'facial_areas': {'img1': {'x': 0, 'y': 0, 'w': 369, 'h': 319, 'left_eye': None, 'right_eye': None}, 'img2': {'x': 159, 'y': 122, 'w': 113, 'h': 113, 'left_eye': (238, 166), 'right_eye': (190, 164)}}, 'time': 13.63}
+[2026-02-22 00:25:56.450722] DEBUG: Login Failed. Verified=False, PwdMatch=True
+
+[2026-02-22 00:26:15.443327] DEBUG LOGIN Attempt: Email='eng22cs0117@dsu.edu.in', Type='student'
+[2026-02-22 00:26:15.455919] DEBUG LOGIN Rows Found: 1
+[2026-02-22 00:26:17.969315] DEBUG: Verification Result: {'verified': True, 'distance': 0.446237, 'threshold': 0.68, 'confidence': 75.73, 'model': 'VGG-Face', 'detector_backend': 'opencv', 'similarity_metric': 'cosine', 'facial_areas': {'img1': {'x': 139, 'y': 101, 'w': 149, 'h': 149, 'left_eye': (242, 162), 'right_eye': (184, 161)}, 'img2': {'x': 159, 'y': 122, 'w': 113, 'h': 113, 'left_eye': (238, 166), 'right_eye': (190, 164)}}, 'time': 2.49}
+
+[2026-02-22 12:58:48.689101] DEBUG LOGIN Attempt: Email='eng22cs0117@dsu.edu.in', Type='student'
+[2026-02-22 12:58:49.106076] DEBUG LOGIN Rows Found: 0
+
+[2026-02-22 12:59:12.844905] DEBUG LOGIN Attempt: Email='eng22cs0117@dsu.edu.in', Type='student'
+[2026-02-22 12:59:12.850412] DEBUG LOGIN Rows Found: 0
+
+[2026-02-22 12:59:47.508684] DEBUG LOGIN Attempt: Email='pavankumarps152@gmail.com', Type='teacher'
+[2026-02-22 12:59:47.531716] DEBUG LOGIN Rows Found: 1
+[2026-02-22 13:00:06.303671] DEBUG: Verification Result: {'verified': False, 'distance': 0.785992, 'threshold': 0.68, 'confidence': 9.27, 'model': 'VGG-Face', 'detector_backend': 'opencv', 'similarity_metric': 'cosine', 'facial_areas': {'img1': {'x': 110, 'y': 103, 'w': 124, 'h': 124, 'left_eye': None, 'right_eye': None}, 'img2': {'x': 155, 'y': 119, 'w': 113, 'h': 113, 'left_eye': (233, 164), 'right_eye': (185, 162)}}, 'time': 18.71}
+[2026-02-22 13:00:06.307068] DEBUG: Login Failed. Verified=False, PwdMatch=True
+
+[2026-02-22 13:01:37.914837] DEBUG LOGIN Attempt: Email='pavankumarps152@gmail.com', Type='teacher'
+[2026-02-22 13:01:37.947400] DEBUG LOGIN Rows Found: 1
+[2026-02-22 13:01:41.572021] DEBUG: Verification Result: {'verified': True, 'distance': 0.430802, 'threshold': 0.68, 'confidence': 77.56, 'model': 'VGG-Face', 'detector_backend': 'opencv', 'similarity_metric': 'cosine', 'facial_areas': {'img1': {'x': 165, 'y': 112, 'w': 128, 'h': 128, 'left_eye': (255, 165), 'right_eye': (204, 165)}, 'img2': {'x': 155, 'y': 119, 'w': 113, 'h': 113, 'left_eye': (233, 164), 'right_eye': (185, 162)}}, 'time': 3.58}
+
+[2026-02-22 13:02:12.529073] DEBUG LOGIN Attempt: Email='eng22cs0117@dsu.edu.in', Type='student'
+[2026-02-22 13:02:12.716379] DEBUG LOGIN Rows Found: 0
+
+[2026-02-22 13:02:26.222975] DEBUG LOGIN Attempt: Email='eng22cs0117@dsu.edu.in', Type='student'
+[2026-02-22 13:02:26.264988] DEBUG LOGIN Rows Found: 0
+
+[2026-02-22 13:02:40.620234] DEBUG LOGIN Attempt: Email='eng22cs0117@dsu.edu.in', Type='student'
+[2026-02-22 13:02:40.638856] DEBUG LOGIN Rows Found: 0
+
+[2026-02-22 13:07:16.184114] DEBUG LOGIN Attempt: Email='eng22cs0117@dsu.edu.in', Type='student'
+[2026-02-22 13:07:16.210771] DEBUG LOGIN Rows Found: 1
+[2026-02-22 13:07:22.917124] DEBUG: Verification Result: {'verified': True, 'distance': 0.571147, 'threshold': 0.68, 'confidence': 61.12, 'model': 'VGG-Face', 'detector_backend': 'opencv', 'similarity_metric': 'cosine', 'facial_areas': {'img1': {'x': 187, 'y': 102, 'w': 136, 'h': 136, 'left_eye': (282, 158), 'right_eye': (229, 159)}, 'img2': {'x': 159, 'y': 122, 'w': 113, 'h': 113, 'left_eye': (238, 166), 'right_eye': (190, 164)}}, 'time': 6.62}
+
+[2026-02-22 15:19:57.847715] DEBUG LOGIN Attempt: Email='pavankumarps152@gmail.com', Type='teacher'
+[2026-02-22 15:19:57.920331] DEBUG LOGIN Rows Found: 1
+[2026-02-22 15:20:30.142657] DEBUG: Verification Result: {'verified': True, 'distance': 0.57765, 'threshold': 0.68, 'confidence': 60.41, 'model': 'VGG-Face', 'detector_backend': 'opencv', 'similarity_metric': 'cosine', 'facial_areas': {'img1': {'x': 135, 'y': 96, 'w': 141, 'h': 141, 'left_eye': (231, 151), 'right_eye': (178, 155)}, 'img2': {'x': 155, 'y': 119, 'w': 113, 'h': 113, 'left_eye': (233, 164), 'right_eye': (185, 162)}}, 'time': 32.14}
+
+[2026-02-22 15:27:38.852840] DEBUG LOGIN Attempt: Email='eng22cs0117@dsu.edu.in', Type='student'
+[2026-02-22 15:27:38.882326] DEBUG LOGIN Rows Found: 1
+[2026-02-22 15:27:56.038195] DEBUG: Verification Result: {'verified': True, 'distance': 0.633559, 'threshold': 0.68, 'confidence': 54.81, 'model': 'VGG-Face', 'detector_backend': 'opencv', 'similarity_metric': 'cosine', 'facial_areas': {'img1': {'x': 148, 'y': 99, 'w': 135, 'h': 135, 'left_eye': (240, 156), 'right_eye': (193, 146)}, 'img2': {'x': 159, 'y': 122, 'w': 113, 'h': 113, 'left_eye': (238, 166), 'right_eye': (190, 164)}}, 'time': 16.87}

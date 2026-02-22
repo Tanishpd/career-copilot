@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>MyProctor.ai</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.0.7/css/all.css">
+
+  <!-- Favicon -->
+  <link rel="apple-touch-icon" sizes="120x120"
+    href="{{ url_for('static', filename='assets/img/favicon/apple-touch-icon.png') }}">
+  <link rel="icon" type="image/png" sizes="32x32"
+    href="{{ url_for('static', filename='assets/img/favicon/favicon-32x32.png') }}">
+  <link rel="icon" type="image/png" sizes="16x16"
+    href="{{ url_for('static', filename='assets/img/favicon/favicon-16x16.png') }}">
+  <link rel="manifest" href="{{ url_for('static', filename='assets/img/favicon/site.webmanifest') }}">
+  <link rel="mask-icon" color="#ffffff"
+    href="{{ url_for('static', filename='static/assets/img/favicon/safari-pinned-tab.svg') }}">
+
+  <!-- Inline Snackbar CSS -->
+  <style>
+    /* mysnackbarcss.css */
+    #snackbar {
+      visibility: hidden;
+      min-width: 500px;
+      margin-left: 170px;
+      align-content: center;
+      background-color: #202124;
+      color: #fff;
+      text-align: center;
+      border-radius: 2px;
+      padding: 16px;
+      position: fixed;
+      z-index: 1;
+      bottom: 30px;
+      font-size: 18px;
+    }
+
+    #snackbar.show {
+      visibility: visible;
+      -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+      animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    }
+
+    @-webkit-keyframes fadein {
+      from {
+        bottom: 0;
+        opacity: 0;
+      }
+
+      to {
+        bottom: 30px;
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadein {
+      from {
+        bottom: 0;
+        opacity: 0;
+      }
+
+      to {
+        bottom: 30px;
+        opacity: 1;
+      }
+    }
+
+    @-webkit-keyframes fadeout {
+      from {
+        bottom: 30px;
+        opacity: 1;
+      }
+
+      to {
+        bottom: 0;
+        opacity: 0;
+      }
+    }
+
+    @keyframes fadeout {
+      from {
+        bottom: 30px;
+        opacity: 1;
+      }
+
+      to {
+        bottom: 0;
+        opacity: 0;
+      }
+    }
+  </style>
+
+  <!-- Inline Snackbar JS -->
+  <script>
+    /*! Snackbar v0.1.14 | http://polonel.com/Snackbar | MIT | https://github.com/polonel/Snackbar */
+    !function (a, b) { "use strict"; "function" == typeof define && define.amd ? define([], function () { return a.Snackbar = b() }) : "object" == typeof module && module.exports ? module.exports = a.Snackbar = b() : a.Snackbar = b() }(this, function () {
+      var a = {}; a.current = null; var b = { text: "Default Text", textColor: "#FFFFFF", width: "auto", showAction: !0, actionText: "Dismiss", actionTextAria: "Dismiss, Description for Screen Readers", alertScreenReader: !1, actionTextColor: "#4CAF50", showSecondButton: !1, secondButtonText: "", secondButtonAria: "Description for Screen Readers", secondButtonTextColor: "#4CAF50", backgroundColor: "#323232", pos: "bottom-left", duration: 5e3, customClass: "", onActionClick: function (a) { a.style.opacity = 0 }, onSecondButtonClick: function (a) { }, onClose: function (a) { } }; a.show = function (d) {
+        var e = c(!0, b, d); a.current && (a.current.style.opacity = 0, setTimeout(function () {
+          var a = this.parentElement; a &&
+            a.removeChild(this)
+        }.bind(a.current), 500)), a.snackbar = document.createElement("div"), a.snackbar.className = "snackbar-container " + e.customClass, a.snackbar.style.width = e.width; var f = document.createElement("p"); if (f.style.margin = 0, f.style.padding = 0, f.style.color = e.textColor, f.style.fontSize = "14px", f.style.fontWeight = 300, f.style.lineHeight = "1em", f.innerHTML = e.text, a.snackbar.appendChild(f), a.snackbar.style.background = e.backgroundColor, e.showSecondButton) { var g = document.createElement("button"); g.className = "action", g.innerHTML = e.secondButtonText, g.setAttribute("aria-label", e.secondButtonAria), g.style.color = e.secondButtonTextColor, g.addEventListener("click", function () { e.onSecondButtonClick(a.snackbar) }), a.snackbar.appendChild(g) } if (e.showAction) { var h = document.createElement("button"); h.className = "action", h.innerHTML = e.actionText, h.setAttribute("aria-label", e.actionTextAria), h.style.color = e.actionTextColor, h.addEventListener("click", function () { e.onActionClick(a.snackbar) }), a.snackbar.appendChild(h) } e.duration && setTimeout(function () {
+          a.current === this && (a.current.style.opacity = 0,
+            a.current.style.top = "-100px", a.current.style.bottom = "-100px")
+        }.bind(a.snackbar), e.duration), e.alertScreenReader && a.snackbar.setAttribute("role", "alert"), a.snackbar.addEventListener("transitionend", function (b, c) { "opacity" === b.propertyName && "0" === this.style.opacity && ("function" == typeof e.onClose && e.onClose(this), this.parentElement.removeChild(this), a.current === this && (a.current = null)) }.bind(a.snackbar)), a.current = a.snackbar, document.body.appendChild(a.snackbar); getComputedStyle(a.snackbar).bottom, getComputedStyle(a.snackbar).top; a.snackbar.style.opacity = 1, a.snackbar.className = "snackbar-container " + e.customClass + " snackbar-pos " + e.pos
+      }, a.close = function () { a.current && (a.current.style.opacity = 0) };
+      var c = function () { var a = {}, b = !1, d = 0, e = arguments.length; "[object Boolean]" === Object.prototype.toString.call(arguments[0]) && (b = arguments[0], d++); for (var f = function (d) { for (var e in d) Object.prototype.hasOwnProperty.call(d, e) && (b && "[object Object]" === Object.prototype.toString.call(d[e]) ? a[e] = c(!0, a[e], d[e]) : a[e] = d[e]) }; d < e; d++) { var g = arguments[d]; f(g) } return a }; return a
+    });
+  </script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+    integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
+    crossorigin="anonymous"></script>
+
+  <!-- Fontawesome -->
+  <link type="text/css" rel="stylesheet"
+    href="{{ url_for('static', filename='vendor/@fortawesome/fontawesome-free/css/all.min.css') }}">
+
+  <!-- Pixel CSS -->
+  <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/pixel.css') }}">
+
+  <script src="{{ url_for('static', filename='volt/vendor/sweetalert2/dist/sweetalert2.all.min.js') }}"></script>
+
+  {% block head %}{% endblock %}
+
+</head>
+
+<body>
+
+  <div id="snackbar">Don't try to open new window or any other applications. We are Monitoring you!</div>
+
+  {% block body %}{% endblock %}
+
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  <!-- Core -->
+  <script src="{{ url_for('static', filename='vendor/popper.js/dist/umd/popper.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/headroom.js/dist/headroom.min.js') }}"></script>
+
+  <!-- Vendor JS -->
+  <script src="{{ url_for('static', filename='vendor/onscreen/dist/on-screen.umd.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/nouislider/distribute/nouislider.min.js') }}"></script>
+  <script
+    src="{{ url_for('static', filename='vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/waypoints/lib/jquery.waypoints.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/jarallax/dist/jarallax.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/jquery.counterup/jquery.counterup.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/jquery-countdown/dist/jquery.countdown.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/smooth-scroll/dist/smooth-scroll.polyfills.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/prismjs/prism.js') }}"></script>
+
+  <!-- pixel JS -->
+  <script src="{{ url_for('static', filename='assets/js/pixel.js') }}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>
