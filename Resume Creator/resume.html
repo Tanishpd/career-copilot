@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Creator</title>
+    <!-- Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for a professional look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles for the project */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .resume-document {
+            font-family: 'Roboto Slab', serif;
+        }
+        /* Styles for printing */
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact; /* Chrome, Safari */
+                print-color-adjust: exact; /* Standard property */
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-container {
+                width: 100% !important;
+                height: 100% !important;
+                position: absolute !important;
+                top: 0 !important;
+                left: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                border: none !important;
+                box-shadow: none !important;
+            }
+            .resume-preview {
+                box-shadow: none;
+                border: none;
+                margin: 0;
+                padding: 0;
+                transform: scale(1);
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+
+    <div class="container mx-auto p-4 lg:p-8">
+        <!-- Header -->
+        <header class="text-center mb-8 no-print">
+            <h1 class="text-4xl font-bold text-slate-900">AI Resume Creator</h1>
+            <p class="text-slate-600 mt-2">Fill in your details below to generate a professional resume in real-time.</p>
+        </header>
+
+        <!-- Main Content: Form and Preview -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            <!-- Left Side: Input Form -->
+            <div class="bg-white p-6 rounded-lg shadow-lg no-print">
+                <h2 class="text-2xl font-bold mb-6 border-b pb-3">Your Information</h2>
+                
+                <!-- Personal Details -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3">Personal Details</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" id="name" placeholder="Full Name" class="p-2 border rounded w-full" oninput="updatePreview()">
+                        <input type="text" id="title" placeholder="Job Title (e.g., Software Engineer)" class="p-2 border rounded w-full" oninput="updatePreview()">
+                        <input type="email" id="email" placeholder="Email Address" class="p-2 border rounded w-full" oninput="updatePreview()">
+                        <input type="tel" id="phone" placeholder="Phone Number" class="p-2 border rounded w-full" oninput="updatePreview()">
+                        <input type="text" id="location" placeholder="City, Country" class="p-2 border rounded w-full" oninput="updatePreview()">
+                        <input type="url" id="linkedin" placeholder="LinkedIn Profile URL" class="p-2 border rounded w-full" oninput="updatePreview()">
+                    </div>
+                </div>
+
+                <!-- Professional Summary -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3">Professional Summary</h3>
+                    <textarea id="summary" placeholder="Write a brief summary of your career objectives and skills..." class="p-2 border rounded w-full h-24" oninput="updatePreview()"></textarea>
+                </div>
+
+                <!-- Work Experience -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-lg font-semibold text-slate-700">Work Experience</h3>
+                        <button id="add-experience-btn" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-sm">+</button>
+                    </div>
+                    <div id="experience-forms">
+                        <!-- Experience entry will be added here -->
+                    </div>
+                </div>
+
+                <!-- Education -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-lg font-semibold text-slate-700">Education</h3>
+                        <button id="add-education-btn" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-sm">+</button>
+                    </div>
+                    <div id="education-forms">
+                        <!-- Education entry will be added here -->
+                    </div>
+                </div>
+
+                <!-- Skills -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3">Skills</h3>
+                    <input type="text" id="skills" placeholder="e.g., JavaScript, React, Node.js, Python..." class="p-2 border rounded w-full" oninput="updatePreview()">
+                    <p class="text-xs text-slate-500 mt-1">Separate skills with a comma.</p>
+                </div>
+                
+                 <!-- Action Button -->
+                <div class="mt-8 text-center">
+                    <button onclick="window.print()" class="w-full bg-green-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-700 transition duration-300">
+                        Print / Download PDF
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- Right Side: Resume Preview -->
+            <div class="print-container">
+                <div id="resume-preview" class="bg-white p-8 rounded-lg shadow-lg resume-document">
+                    <!-- Header -->
+                    <div class="text-center border-b-2 pb-4 border-slate-300">
+                        <h1 id="preview-name" class="text-4xl font-bold text-slate-800">Your Name</h1>
+                        <p id="preview-title" class="text-lg text-blue-600 font-semibold mt-1">Job Title</p>
+                        <div id="preview-contact" class="text-sm text-slate-600 mt-3 flex justify-center items-center flex-wrap gap-x-4 gap-y-1">
+                            <span id="preview-email-item" class="hidden"></span>
+                            <span id="preview-phone-item" class="hidden"></span>
+                            <span id="preview-location-item" class="hidden"></span>
+                            <a id="preview-linkedin-item" href="#" class="text-blue-600 hover:underline hidden"></a>
+                        </div>
+                    </div>
+
+                    <!-- Summary -->
+                    <div id="summary-section" class="mt-6 hidden">
+                        <h2 class="text-xl font-bold text-slate-700 border-b-2 border-slate-200 pb-1 mb-2">Summary</h2>
+                        <p id="preview-summary" class="text-sm text-slate-700 leading-relaxed"></p>
+                    </div>
+
+                    <!-- Experience -->
+                    <div id="experience-section" class="mt-6 hidden">
+                        <h2 class="text-xl font-bold text-slate-700 border-b-2 border-slate-200 pb-1 mb-2">Work Experience</h2>
+                        <div id="preview-experience"></div>
+                    </div>
+
+                    <!-- Education -->
+                    <div id="education-section" class="mt-6 hidden">
+                        <h2 class="text-xl font-bold text-slate-700 border-b-2 border-slate-200 pb-1 mb-2">Education</h2>
+                        <div id="preview-education"></div>
+                    </div>
+
+                    <!-- Skills -->
+                    <div id="skills-section" class="mt-6 hidden">
+                        <h2 class="text-xl font-bold text-slate-700 border-b-2 border-slate-200 pb-1 mb-2">Skills</h2>
+                        <div id="preview-skills" class="flex flex-wrap gap-2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DYNAMIC FORM LOGIC ---
+        const addExperienceBtn = document.getElementById('add-experience-btn');
+        const experienceForms = document.getElementById('experience-forms');
+        let experienceCount = 0;
+
+        const addEducationBtn = document.getElementById('add-education-btn');
+        const educationForms = document.getElementById('education-forms');
+        let educationCount = 0;
+
+        // Function to add a new experience form
+        function addExperienceForm() {
+            experienceCount++;
+            const formHtml = `
+                <div id="exp-entry-${experienceCount}" class="p-4 border rounded-md mb-4 relative">
+                    <button class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold" onclick="removeForm('exp-entry-${experienceCount}')">X</button>
+                    <input type="text" placeholder="Job Title" class="p-2 border rounded w-full mb-2 experience-title" oninput="updatePreview()">
+                    <input type="text" placeholder="Company Name" class="p-2 border rounded w-full mb-2 experience-company" oninput="updatePreview()">
+                    <input type="text" placeholder="Location" class="p-2 border rounded w-full mb-2 experience-location" oninput="updatePreview()">
+                    <input type="text" placeholder="Start & End Dates (e.g., Jan 2020 - Present)" class="p-2 border rounded w-full mb-2 experience-dates" oninput="updatePreview()">
+                    <textarea placeholder="Key responsibilities and achievements..." class="p-2 border rounded w-full h-20 experience-desc" oninput="updatePreview()"></textarea>
+                </div>
+            `;
+            experienceForms.insertAdjacentHTML('beforeend', formHtml);
+        }
+
+        // Function to add a new education form
+        function addEducationForm() {
+            educationCount++;
+            const formHtml = `
+                <div id="edu-entry-${educationCount}" class="p-4 border rounded-md mb-4 relative">
+                    <button class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold" onclick="removeForm('edu-entry-${educationCount}')">X</button>
+                    <input type="text" placeholder="Degree or Certificate" class="p-2 border rounded w-full mb-2 education-degree" oninput="updatePreview()">
+                    <input type="text" placeholder="Institution Name" class="p-2 border rounded w-full mb-2 education-institution" oninput="updatePreview()">
+                    <input type="text" placeholder="Graduation Year" class="p-2 border rounded w-full mb-2 education-year" oninput="updatePreview()">
+                </div>
+            `;
+            educationForms.insertAdjacentHTML('beforeend', formHtml);
+        }
+        
+        // Function to remove a form entry
+        function removeForm(id) {
+            document.getElementById(id).remove();
+            updatePreview();
+        }
+
+        addExperienceBtn.addEventListener('click', addExperienceForm);
+        addEducationBtn.addEventListener('click', addEducationForm);
+        
+        // Add one form of each type to start with
+        addExperienceForm();
+        addEducationForm();
+
+
+        // --- REAL-TIME PREVIEW LOGIC ---
+        function updatePreview() {
+            // Personal Details
+            document.getElementById('preview-name').textContent = document.getElementById('name').value || 'Your Name';
+            document.getElementById('preview-title').textContent = document.getElementById('title').value || 'Job Title';
+
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const location = document.getElementById('location').value;
+            const linkedin = document.getElementById('linkedin').value;
+
+            updateContactInfo('email', email);
+            updateContactInfo('phone', phone);
+            updateContactInfo('location', location);
+            updateContactInfo('linkedin', linkedin, true);
+
+            // Summary
+            const summary = document.getElementById('summary').value;
+            const summarySection = document.getElementById('summary-section');
+            if (summary) {
+                summarySection.classList.remove('hidden');
+                document.getElementById('preview-summary').textContent = summary;
+            } else {
+                summarySection.classList.add('hidden');
+            }
+
+            // Experience
+            const experiencePreview = document.getElementById('preview-experience');
+            const experienceEntries = document.querySelectorAll('#experience-forms > div');
+            experiencePreview.innerHTML = '';
+            let hasExperience = false;
+            experienceEntries.forEach(entry => {
+                const title = entry.querySelector('.experience-title').value;
+                const company = entry.querySelector('.experience-company').value;
+                const location = entry.querySelector('.experience-location').value;
+                const dates = entry.querySelector('.experience-dates').value;
+                const desc = entry.querySelector('.experience-desc').value;
+
+                if (title || company) {
+                    hasExperience = true;
+                    const descHtml = desc.split('\n').map(line => `<li>${line}</li>`).join('');
+                    experiencePreview.innerHTML += `
+                        <div class="mb-4">
+                            <div class="flex justify-between items-baseline">
+                                <h3 class="text-md font-bold">${title}</h3>
+                                <p class="text-sm font-light text-slate-600">${dates}</p>
+                            </div>
+                            <div class="flex justify-between items-baseline">
+                                <p class="text-md font-semibold text-slate-700">${company}</p>
+                                <p class="text-sm font-light text-slate-600">${location}</p>
+                            </div>
+                            <ul class="list-disc list-inside text-sm text-slate-600 mt-1 space-y-1">${descHtml}</ul>
+                        </div>
+                    `;
+                }
+            });
+            document.getElementById('experience-section').classList.toggle('hidden', !hasExperience);
+
+            // Education
+            const educationPreview = document.getElementById('preview-education');
+            const educationEntries = document.querySelectorAll('#education-forms > div');
+            educationPreview.innerHTML = '';
+            let hasEducation = false;
+            educationEntries.forEach(entry => {
+                const degree = entry.querySelector('.education-degree').value;
+                const institution = entry.querySelector('.education-institution').value;
+                const year = entry.querySelector('.education-year').value;
+
+                if (degree || institution) {
+                    hasEducation = true;
+                    educationPreview.innerHTML += `
+                        <div class="mb-2">
+                            <div class="flex justify-between items-baseline">
+                                <h3 class="text-md font-bold">${degree}</h3>
+                                <p class="text-sm font-light text-slate-600">${year}</p>
+                            </div>
+                            <p class="text-md font-semibold text-slate-700">${institution}</p>
+                        </div>
+                    `;
+                }
+            });
+            document.getElementById('education-section').classList.toggle('hidden', !hasEducation);
+
+
+            // Skills
+            const skillsInput = document.getElementById('skills').value;
+            const skillsPreview = document.getElementById('preview-skills');
+            const skillsSection = document.getElementById('skills-section');
+            skillsPreview.innerHTML = '';
+            if (skillsInput) {
+                skillsSection.classList.remove('hidden');
+                const skillsArray = skillsInput.split(',').map(skill => skill.trim()).filter(skill => skill);
+                skillsArray.forEach(skill => {
+                    skillsPreview.innerHTML += `<span class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">${skill}</span>`;
+                });
+            } else {
+                skillsSection.classList.add('hidden');
+            }
+        }
+
+        function updateContactInfo(id, value, isLink = false) {
+            const item = document.getElementById(`preview-${id}-item`);
+            if (value) {
+                item.classList.remove('hidden');
+                if (isLink) {
+                    item.href = value;
+                    item.textContent = value.replace(/^(https?:\/\/)?(www\.)?/, '');
+                } else {
+                    item.textContent = value;
+                }
+            } else {
+                item.classList.add('hidden');
+            }
+        }
+
+        // Initial call to set up the preview
+        updatePreview();
+    </script>
+</body>
+</html>
