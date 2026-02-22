@@ -1,0 +1,388 @@
+{% extends 'professor_dashboard.html' %}
+{% block body %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="card border-light shadow-sm">
+            <div class="card-header">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h2 class="h5">Generated Q&A</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <form id="saveForm" method="POST" action="save_generated_test">
+                    <input type="hidden" name="test_data" id="test_data_input">
+                    <input type="hidden" name="test_category" value="{{ category }}">
+
+                    <div class="table-responsive">
+                        <table class="table align-items-center table-flush">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th style="width: 5%;">#</th>
+                                    <th style="width: 75%;">Question Details (Editable)</th>
+                                    <th style="width: 20%;">Metadata</th>
+                                </tr>
+                            </thead>
+                            <tbody id="questionsBody">
+                                {% for q in cresults %}
+                                <tr class="question-row" data-type="{{ q.type if q.type else category }}">
+                                    <td>{{ loop.index }}</td>
+                                    <td>
+                                        <!-- VIEW MODE -->
+                                        <div class="view-mode" id="view-{{ loop.index }}">
+                                            <div class="mb-3">
+                                                <strong>Question:</strong><br>
+                                                {{ q.q | safe }}
+                                            </div>
+
+                                            {% if (q.type == 'aptitude') or (category == 'aptitude' and q.type !=
+                                            'coding') %}
+                                            <div class="ml-3">
+                                                A) {{ q.a }}<br>
+                                                B) {{ q.b }}<br>
+                                                C) {{ q.c }}<br>
+                                                D) {{ q.d }}
+                                            </div>
+                                            <div class="mt-2 text-success">
+                                                <strong>Answer:</strong> {{ q.ans }}
+                                            </div>
+                                            <div class="mt-1 text-muted">
+                                                <em>Explanation: {{ q.explanation }}</em>
+                                            </div>
+                                            {% else %}
+                                            <div class="mt-2">
+                                                <strong>Compiler ID:</strong> {{ q.compiler }}
+                                            </div>
+                                            <div class="mt-2">
+                                                <div class="mt-2">
+                                                    <button class="btn btn-sm btn-info mb-2" type="button"
+                                                        data-toggle="collapse"
+                                                        data-target="#collapseBoilerplate{{ loop.index }}"
+                                                        aria-expanded="false"
+                                                        aria-controls="collapseBoilerplate{{ loop.index }}">
+                                                        Show/Hide Boilerplates
+                                                    </button>
+                                                    <div class="collapse" id="collapseBoilerplate{{ loop.index }}">
+                                                        <strong>Boilerplate:</strong>
+                                                        <ul class="nav nav-tabs" id="boilerTabView{{ loop.index }}"
+                                                            role="tablist">
+                                                            <li class="nav-item">
+                                                                <a class="nav-link active"
+                                                                    id="py-tab-view-{{ loop.index }}" data-toggle="tab"
+                                                                    href="#py-view-{{ loop.index }}"
+                                                                    role="tab">Python</a>
+                                                            </li>
+                                                            <li class="nav-item">
+                                                                <a class="nav-link" id="java-tab-view-{{ loop.index }}"
+                                                                    data-toggle="tab" href="#java-view-{{ loop.index }}"
+                                                                    role="tab">Java</a>
+                                                            </li>
+                                                            <li class="nav-item">
+                                                                <a class="nav-link" id="c-tab-view-{{ loop.index }}"
+                                                                    data-toggle="tab" href="#c-view-{{ loop.index }}"
+                                                                    role="tab">C</a>
+                                                            </li>
+                                                            <li class="nav-item">
+                                                                <a class="nav-link" id="cpp-tab-view-{{ loop.index }}"
+                                                                    data-toggle="tab" href="#cpp-view-{{ loop.index }}"
+                                                                    role="tab">C++</a>
+                                                            </li>
+                                                        </ul>
+                                                        <div class="tab-content border border-top-0 p-3"
+                                                            id="boilerTabContentView{{ loop.index }}">
+                                                            <div class="tab-pane fade show active"
+                                                                id="py-view-{{ loop.index }}" role="tabpanel">
+                                                                <pre class="bg-light p-2 border"
+                                                                    style="max-height: 150px; overflow-y: auto;">{{ q.boilerplates.python if q.boilerplates and q.boilerplates.python else (q.boilerplate if q.boilerplate else 'No boilerplate available') }}</pre>
+                                                            </div>
+                                                            <div class="tab-pane fade" id="java-view-{{ loop.index }}"
+                                                                role="tabpanel">
+                                                                <pre class="bg-light p-2 border"
+                                                                    style="max-height: 150px; overflow-y: auto;">{{ q.boilerplates.java if q.boilerplates and q.boilerplates.java else 'No boilerplate available' }}</pre>
+                                                            </div>
+                                                            <div class="tab-pane fade" id="c-view-{{ loop.index }}"
+                                                                role="tabpanel">
+                                                                <pre class="bg-light p-2 border"
+                                                                    style="max-height: 150px; overflow-y: auto;">{{ q.boilerplates.c if q.boilerplates and q.boilerplates.c else 'No boilerplate available' }}</pre>
+                                                            </div>
+                                                            <div class="tab-pane fade" id="cpp-view-{{ loop.index }}"
+                                                                role="tabpanel">
+                                                                <pre class="bg-light p-2 border"
+                                                                    style="max-height: 150px; overflow-y: auto;">{{ q.boilerplates.cpp if q.boilerplates and q.boilerplates.cpp else 'No boilerplate available' }}</pre>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% if q.example_cases %}
+                                            <div class="mt-2">
+                                                <strong>Example Cases:</strong>
+                                                <pre
+                                                    class="bg-light p-2 border">{{ q.example_cases | tojson if q.example_cases is not string else q.example_cases }}</pre>
+                                            </div>
+                                            {% endif %}
+                                            {% if q.hidden_cases %}
+                                            <div class="mt-2">
+                                                <strong>Hidden Cases:</strong>
+                                                <pre
+                                                    class="bg-light p-2 border">{{ q.hidden_cases | tojson if q.hidden_cases is not string else q.hidden_cases }}</pre>
+                                            </div>
+                                            {% endif %}
+                                            {% endif %}
+
+                                            <button type="button" class="btn btn-sm btn-outline-primary mt-3"
+                                                onclick="toggleEdit('{{ loop.index }}')">
+                                                <i class="fas fa-edit"></i> Edit Question
+                                            </button>
+                                        </div>
+
+                                        <!-- EDIT MODE -->
+                                        <div class="edit-mode" id="edit-{{ loop.index }}" style="display: none;">
+                                            <div class="form-group">
+                                                <label class="form-control-label">Question Text (HTML)</label>
+                                                <textarea class="form-control q-text" rows="8">{{ q.q }}</textarea>
+                                            </div>
+
+                                            {% if (q.type == 'aptitude') or (category == 'aptitude' and q.type !=
+                                            'coding') %}
+                                            <!-- Aptitude Options -->
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="input-group mb-2">
+                                                        <div class="input-group-prepend"><span
+                                                                class="input-group-text">A</span></div>
+                                                        <input type="text" class="form-control q-opt-a"
+                                                            value="{{ q.a }}">
+                                                    </div>
+                                                    <div class="input-group mb-2">
+                                                        <div class="input-group-prepend"><span
+                                                                class="input-group-text">B</span></div>
+                                                        <input type="text" class="form-control q-opt-b"
+                                                            value="{{ q.b }}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="input-group mb-2">
+                                                        <div class="input-group-prepend"><span
+                                                                class="input-group-text">C</span></div>
+                                                        <input type="text" class="form-control q-opt-c"
+                                                            value="{{ q.c }}">
+                                                    </div>
+                                                    <div class="input-group mb-2">
+                                                        <div class="input-group-prepend"><span
+                                                                class="input-group-text">D</span></div>
+                                                        <input type="text" class="form-control q-opt-d"
+                                                            value="{{ q.d }}">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-control-label">Correct Answer</label>
+                                                <select class="form-control q-ans">
+                                                    <option value="A" {% if q.ans=='A' %}selected{% endif %}>A
+                                                    </option>
+                                                    <option value="B" {% if q.ans=='B' %}selected{% endif %}>B
+                                                    </option>
+                                                    <option value="C" {% if q.ans=='C' %}selected{% endif %}>C
+                                                    </option>
+                                                    <option value="D" {% if q.ans=='D' %}selected{% endif %}>D
+                                                    </option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-control-label">Explanation</label>
+                                                <textarea class="form-control q-expl"
+                                                    rows="2">{{ q.explanation }}</textarea>
+                                            </div>
+
+                                            {% else %}
+                                            <!-- Coding Fields -->
+                                            <div class="form-group">
+                                                <label class="form-control-label">Hidden Test Cases (JSON)</label>
+                                                <textarea class="form-control q-hidden"
+                                                    rows="2">{{ q.hidden_cases | tojson if q.hidden_cases is not string else q.hidden_cases }}</textarea>
+                                                <small class="text-muted">Format: [{"input": "...", "output":
+                                                    "..."}]</small>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-control-label">Example Test Cases (JSON)</label>
+                                                <textarea class="form-control q-example"
+                                                    rows="2">{{ q.example_cases | tojson if q.example_cases is not string else q.example_cases }}</textarea>
+                                                <small class="text-muted">Format: [{"input": "...", "output":
+                                                    "...", "explanation": "..."}]</small>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-control-label">Boilerplate Code</label>
+
+                                                <ul class="nav nav-tabs" id="boilerTabEdit{{ loop.index }}"
+                                                    role="tablist">
+                                                    <li class="nav-item">
+                                                        <a class="nav-link active" id="py-tab-edit-{{ loop.index }}"
+                                                            data-toggle="tab" href="#py-edit-{{ loop.index }}"
+                                                            role="tab">Python</a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link" id="java-tab-edit-{{ loop.index }}"
+                                                            data-toggle="tab" href="#java-edit-{{ loop.index }}"
+                                                            role="tab">Java</a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link" id="c-tab-edit-{{ loop.index }}"
+                                                            data-toggle="tab" href="#c-edit-{{ loop.index }}"
+                                                            role="tab">C</a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link" id="cpp-tab-edit-{{ loop.index }}"
+                                                            data-toggle="tab" href="#cpp-edit-{{ loop.index }}"
+                                                            role="tab">C++</a>
+                                                    </li>
+                                                </ul>
+                                                <div class="tab-content border border-top-0 p-3"
+                                                    id="boilerTabContentEdit{{ loop.index }}">
+                                                    <div class="tab-pane fade show active" id="py-edit-{{ loop.index }}"
+                                                        role="tabpanel">
+                                                        <textarea class="form-control q-boiler-python text-monospace"
+                                                            rows="5">{{ q.boilerplates.python if q.boilerplates and q.boilerplates.python else (q.boilerplate if q.boilerplate else '') }}</textarea>
+                                                    </div>
+                                                    <div class="tab-pane fade" id="java-edit-{{ loop.index }}"
+                                                        role="tabpanel">
+                                                        <textarea class="form-control q-boiler-java text-monospace"
+                                                            rows="5">{{ q.boilerplates.java if q.boilerplates and q.boilerplates.java else '' }}</textarea>
+                                                    </div>
+                                                    <div class="tab-pane fade" id="c-edit-{{ loop.index }}"
+                                                        role="tabpanel">
+                                                        <textarea class="form-control q-boiler-c text-monospace"
+                                                            rows="5">{{ q.boilerplates.c if q.boilerplates and q.boilerplates.c else '' }}</textarea>
+                                                    </div>
+                                                    <div class="tab-pane fade" id="cpp-edit-{{ loop.index }}"
+                                                        role="tabpanel">
+                                                        <textarea class="form-control q-boiler-cpp text-monospace"
+                                                            rows="5">{{ q.boilerplates.cpp if q.boilerplates and q.boilerplates.cpp else '' }}</textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-control-label">Compiler ID</label>
+                                                <input type="text" class="form-control q-compiler"
+                                                    value="{{ q.compiler }}">
+                                            </div>
+                                            {% endif %}
+
+                                            <div class="mt-3">
+                                                <button type="button" class="btn btn-sm btn-primary"
+                                                    onclick="toggleEdit('{{ loop.index }}')">Done Editing</button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <label class="form-control-label">Marks</label>
+                                            <input type="number" class="form-control q-marks" value="{{ q.marks }}">
+                                        </div>
+                                        <span
+                                            class="badge badge-pill badge-{{ 'primary' if (q.type == 'aptitude' or category=='aptitude') else 'warning' }}">
+                                            {{ q.type if q.type else category }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer py-4">
+                        <button type="button" class="btn btn-success" onclick="submitData()">Save to Question
+                            Bank</button>
+                    </div>
+                </form>
+
+                <script>
+                    function submitData() {
+                        let questions = [];
+                        const rows = document.querySelectorAll('.question-row');
+
+                        rows.forEach(row => {
+                            let type = row.getAttribute('data-type');
+                            let q = {
+                                q: row.querySelector('.q-text').value,
+                                marks: row.querySelector('.q-marks').value
+                            };
+
+                            if (type === 'aptitude') {
+                                q.a = row.querySelector('.q-opt-a').value;
+                                q.b = row.querySelector('.q-opt-b').value;
+                                q.c = row.querySelector('.q-opt-c').value;
+                                q.d = row.querySelector('.q-opt-d').value;
+                                q.ans = row.querySelector('.q-ans').value;
+                                q.explanation = row.querySelector('.q-expl').value;
+                            } else {
+                                q.compiler = row.querySelector('.q-compiler').value;
+                                try {
+                                    q.hidden_cases = JSON.parse(row.querySelector('.q-hidden').value || "[]");
+                                } catch (e) {
+                                    q.hidden_cases = row.querySelector('.q-hidden').value; // Keep as string if parse fails
+                                }
+                                try {
+                                    q.example_cases = JSON.parse(row.querySelector('.q-example').value || "[]");
+                                } catch (e) {
+                                    q.example_cases = row.querySelector('.q-example').value;
+                                }
+                                q.boilerplates = {
+                                    python: row.querySelector('.q-boiler-python').value,
+                                    java: row.querySelector('.q-boiler-java').value,
+                                    c: row.querySelector('.q-boiler-c').value,
+                                    cpp: row.querySelector('.q-boiler-cpp').value
+                                };
+                            }
+                            questions.push(q);
+                        });
+
+                        document.getElementById('test_data_input').value = JSON.stringify(questions);
+                        document.getElementById('saveForm').submit();
+                    }
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Ensure the outer layout table behaves */
+    .table td,
+    .table th {
+        white-space: normal;
+        vertical-align: top;
+    }
+
+    /* Styles for the INNER tables generated by AI */
+    table {
+        max-width: 100%;
+    }
+
+    .table-bordered {
+        border: 1px solid #000 !important;
+        border-collapse: collapse !important;
+        margin-bottom: 15px;
+        width: 100%;
+    }
+
+    .table-bordered th,
+    .table-bordered td {
+        border: 1px solid #000 !important;
+        padding: 8px !important;
+        text-align: center;
+    }
+
+    .table-bordered th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+        // Datatable init if needed, or remove if causing issues with form
+        // $('#example').DataTable(...); 
+    });
+</script>
+{% endblock %}

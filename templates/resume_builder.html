@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Builder - MyProctor.ai</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #64748b;
+            --bg-light: #f1f5f9;
+            --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.06);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-light);
+            height: 100vh;
+            overflow: hidden;
+            color: #1e293b;
+        }
+
+        /* Layout */
+        .builder-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Left Panel - Form */
+        .editor-panel {
+            width: 40%;
+            background: white;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 10;
+        }
+
+        .editor-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            background: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .editor-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            background: #f8fafc;
+        }
+
+        /* Right Panel - Preview */
+        .preview-panel {
+            flex: 1;
+            background: #cbd5e1;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+            overflow-y: auto;
+            align-items: flex-start;
+        }
+
+        /* Resume Paper - A4 Size */
+        .resume-paper {
+            width: 210mm;
+            min-height: 297mm;
+            background: white;
+            padding: 10mm 20mm 20mm 20mm;
+            /* Reduced Top Padding to 10mm as requested */
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            color: #333;
+            font-family: 'Merriweather', serif;
+            /* Professional Serif for Resume */
+        }
+
+        /* ... form styling ... */
+
+        /* ... rich editor styling ... */
+
+        /* Resume Preview Styling */
+        #resume-preview {
+            line-height: 1.5;
+            color: #111;
+        }
+
+        /* Header Layout: Text Centered, Photo Absolute Right */
+        #preview-header {
+            position: relative;
+            border-bottom: 2px solid #333;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            min-height: 100px;
+            /* Ensure space for photo */
+        }
+
+        .preview-header-text {
+            text-align: center;
+            width: 100%;
+            padding: 0 100px;
+            /* Prevent text from overlapping photo */
+        }
+
+        #preview-name {
+            font-size: 26pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+            color: #1e293b;
+            font-family: 'Inter', sans-serif;
+            line-height: 1.2;
+        }
+
+        #preview-job-title {
+            font-size: 13pt;
+            color: #2563eb;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            text-transform: uppercase;
+        }
+
+        #preview-contact {
+            font-size: 10pt;
+            color: #555;
+            font-family: 'Inter', sans-serif;
+            line-height: 1.5;
+        }
+
+        .preview-photo-print {
+            width: 90px;
+            height: 90px;
+            border-radius: 6px;
+            object-fit: cover;
+            position: absolute;
+            right: 0;
+            top: 0;
+            display: none;
+            /* Hidden unless uploaded */
+            border: 1px solid #eee;
+        }
+
+        /* Form Styling */
+        .form-section {
+            background: white;
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 1.25rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .form-section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 0.5rem;
+        }
+
+        .form-section-title i {
+            color: var(--primary);
+            margin-right: 8px;
+        }
+
+        .form-control,
+        .form-select {
+            font-size: 0.9rem;
+            padding: 0.5rem 0.75rem;
+            border-color: #cbd5e1;
+            margin-bottom: 0.5rem;
+            /* Add spacing between inputs */
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+        }
+
+        /* --- Rich Text Editor Styling --- */
+        .rich-text-container {
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background: #fff;
+            position: relative;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .rich-text-container:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+        }
+
+        .rich-toolbar {
+            display: none;
+            /* Hidden by default */
+            background: #f1f5f9;
+            /* Light grey for contrast inside white box */
+            border-bottom: 1px solid #e2e8f0;
+            padding: 5px 10px;
+            border-radius: 8px 8px 0 0;
+            gap: 5px;
+            align-items: center;
+            animation: fadeIn 0.2s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .rich-text-container:focus-within .rich-toolbar {
+            display: flex;
+        }
+
+        .rich-btn {
+            background: white;
+            border: 1px solid #e2e8f0;
+            color: #64748b;
+            cursor: pointer;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .rich-btn:hover {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .rich-btn.active {
+            background: #cbd5e1;
+            color: #0f172a;
+        }
+
+        .rich-select {
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            padding: 2px 4px;
+            font-size: 0.8rem;
+            color: #475569;
+            background: white;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .vr {
+            border-left: 1px solid #cbd5e1;
+            height: 16px;
+            align-self: center;
+        }
+
+        .rich-editor {
+            min-height: 80px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 12px;
+            outline: none;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #334155;
+        }
+
+        .rich-editor[placeholder]:empty:before {
+            content: attr(placeholder);
+            color: #94a3b8;
+            cursor: text;
+        }
+
+        /* Profile Photo Upload */
+        .profile-upload-btn {
+            display: inline-block;
+            cursor: pointer;
+            border: 2px dashed #cbd5e1;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            transition: all 0.2s;
+            background: #f8fafc;
+            overflow: hidden;
+        }
+
+        .profile-upload-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: #eff6ff;
+        }
+
+        .profile-upload-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Resume Preview Styling */
+        #resume-preview {
+            line-height: 1.5;
+            color: #111;
+        }
+
+        /* Header */
+        #preview-header {
+            text-align: center;
+            border-bottom: 2px solid #333;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        #preview-name {
+            font-size: 28pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+            color: #1e293b;
+            font-family: 'Inter', sans-serif;
+        }
+
+        #preview-job-title {
+            font-size: 14pt;
+            color: #444;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+        }
+
+        #preview-contact {
+            font-size: 10pt;
+            color: #555;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .preview-photo-print {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+            display: none;
+            /* Hidden unless uploaded */
+        }
+
+        /* Sections */
+        .resume-section {
+            margin-bottom: 18px;
+        }
+
+        .section-title {
+            font-size: 12pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 10px;
+            padding-bottom: 2px;
+            color: #2563eb;
+            /* Accent Color */
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Items */
+        .resume-item {
+            margin-bottom: 12px;
+        }
+
+        .resume-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .resume-role {
+            font-weight: 700;
+            font-size: 11pt;
+            color: #000;
+        }
+
+        .resume-company {
+            font-weight: 600;
+            font-style: italic;
+            color: #444;
+            font-size: 10.5pt;
+        }
+
+        .resume-date {
+            font-size: 10pt;
+            color: #666;
+            font-family: 'Inter', sans-serif;
+            text-align: right;
+            min-width: 100px;
+        }
+
+        .resume-location {
+            font-size: 10pt;
+            color: #666;
+            font-style: italic;
+        }
+
+        .resume-desc {
+            font-size: 10.5pt;
+            text-align: justify;
+            margin-top: 4px;
+        }
+
+        .resume-desc ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .resume-desc li {
+            margin-bottom: 2px;
+        }
+
+        /* Skills specific */
+        .skills-list {
+            font-size: 10.5pt;
+            line-height: 1.6;
+        }
+
+        /* AI Button */
+        .btn-ai {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            font-size: 0.75rem;
+            padding: 4px 12px;
+            border-radius: 20px;
+            transition: 0.2s;
+            margin-top: 5px;
+        }
+
+        .btn-ai:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+            color: white;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #fff;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="builder-container">
+        <!-- EDITOR PANEL -->
+        <div class="editor-panel">
+            <div class="editor-header">
+                <a href="/student_dashboard" class="text-decoration-none text-secondary"><i
+                        class="fas fa-arrow-left"></i> Back</a>
+                <h6 class="fw-bold text-primary m-0">AI Resume Builder</h6>
+                <button class="btn btn-primary btn-sm" onclick="downloadPDF()"><i class="fas fa-file-pdf"></i>
+                    Download</button>
+            </div>
+
+            <div class="editor-content">
+
+                <!-- Personal Info -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <span><i class="fas fa-id-card"></i> Personal Details</span>
+                    </div>
+                    <div class="text-center mb-3">
+                        <label class="profile-upload-btn mx-auto">
+                            <img id="form-photo-preview" src="" style="display:none;">
+                            <span id="form-photo-text"><i class="fas fa-camera"></i></span>
+                            <input type="file" hidden accept="image/*" onchange="uploadPhoto(event)">
+                        </label>
+                        <div class="small text-muted mt-1">Click to upload photo</div>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" id="fullName" placeholder="Full Name"
+                                oninput="updatePreview()">
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" id="jobTitle" placeholder="Target Job Title"
+                                oninput="updatePreview()">
+                        </div>
+                        <div class="col-md-6">
+                            <input type="email" class="form-control" id="email" placeholder="Email Address"
+                                oninput="updatePreview()">
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" id="phone" placeholder="Phone Number"
+                                oninput="updatePreview()">
+                        </div>
+                        <div class="col-12">
+                            <input type="text" class="form-control" id="location"
+                                placeholder="City, Country (e.g. New York, USA)" oninput="updatePreview()">
+                        </div>
+                        <div class="col-12">
+                            <label class="small text-muted">Professional Summary</label>
+                            <!-- Rich Text Wrapper for Summary -->
+                            <div class="rich-text-container" tabindex="0">
+                                <div class="rich-toolbar" onmousedown="event.preventDefault()">
+                                    <select class="rich-select"
+                                        onchange="execCmd('fontName', this.value); this.value='';"
+                                        onmousedown="event.stopPropagation()">
+                                        <option value="" selected disabled>Font</option>
+                                        <option value="Inter">Sans</option>
+                                        <option value="Merriweather">Serif</option>
+                                        <option value="Times New Roman">Times</option>
+                                    </select>
+                                    <select class="rich-select" style="width:60px"
+                                        onchange="execCmd('fontSize', this.value); this.value='';"
+                                        onmousedown="event.stopPropagation()">
+                                        <option value="" selected disabled>Size</option>
+                                        <option value="1">10</option>
+                                        <option value="2">13</option>
+                                        <option value="3">16</option>
+                                        <option value="4">18</option>
+                                        <option value="5">24</option>
+                                        <option value="6">32</option>
+                                        <option value="7">48</option>
+                                    </select>
+                                    <div class="vr mx-1"></div>
+                                    <button class="rich-btn" onclick="execCmd('bold')" title="Bold"><i
+                                            class="fas fa-bold"></i></button>
+                                    <button class="rich-btn" onclick="execCmd('italic')" title="Italic"><i
+                                            class="fas fa-italic"></i></button>
+                                    <button class="rich-btn" onclick="execCmd('insertUnorderedList')"
+                                        title="Bullet List"><i class="fas fa-list-ul"></i></button>
+                                    <button class="rich-btn" onclick="execCmd('justifyLeft')" title="Align Left"><i
+                                            class="fas fa-align-left"></i></button>
+                                    <button class="rich-btn" onclick="execCmd('justifyCenter')" title="Align Center"><i
+                                            class="fas fa-align-center"></i></button>
+                                </div>
+                                <div class="rich-editor" id="summary-editor" contenteditable="true"
+                                    placeholder="Brief professional summary..." oninput="syncSummary()"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skills -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <span><i class="fas fa-bolt"></i> Skills</span>
+                        <button class="btn btn-ai" onclick="suggestSkills(this)">
+                            <i class="fas fa-magic"></i> AI Suggest
+                            <div class="loading-spinner"></div>
+                        </button>
+                    </div>
+                    <div class="rich-text-container" tabindex="0">
+                        <div class="rich-toolbar" onmousedown="event.preventDefault()">
+                            <select class="rich-select" onchange="execCmd('fontName', this.value); this.value='';"
+                                onmousedown="event.stopPropagation()">
+                                <option value="" selected disabled>Font</option>
+                                <option value="Inter">Sans</option>
+                                <option value="Merriweather">Serif</option>
+                                <option value="Times New Roman">Times</option>
+                            </select>
+                            <select class="rich-select" style="width:60px"
+                                onchange="execCmd('fontSize', this.value); this.value='';"
+                                onmousedown="event.stopPropagation()">
+                                <option value="" selected disabled>Size</option>
+                                <option value="1">10</option>
+                                <option value="2">13</option>
+                                <option value="3">16</option>
+                                <option value="4">18</option>
+                                <option value="5">24</option>
+                                <option value="6">32</option>
+                                <option value="7">48</option>
+                            </select>
+                            <div class="vr mx-1"></div>
+                            <button class="rich-btn" onclick="execCmd('bold')" title="Bold"><i
+                                    class="fas fa-bold"></i></button>
+                            <button class="rich-btn" onclick="execCmd('italic')" title="Italic"><i
+                                    class="fas fa-italic"></i></button>
+                            <button class="rich-btn" onclick="execCmd('insertUnorderedList')" title="Bullet List"><i
+                                    class="fas fa-list-ul"></i></button>
+                        </div>
+                        <div class="rich-editor" id="skills-editor" contenteditable="true"
+                            placeholder="Key Skills, Tech Stack..." oninput="syncSkills()"></div>
+                    </div>
+                </div>
+
+                <!-- Experience -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <span><i class="fas fa-briefcase"></i> Work Experience</span>
+                        <button class="btn btn-sm btn-outline-primary" onclick="addExperience()">+ Add</button>
+                    </div>
+                    <div id="experience-list"></div>
+                </div>
+
+                <!-- Projects (new) -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <span><i class="fas fa-code-branch"></i> Projects</span>
+                        <button class="btn btn-sm btn-outline-primary" onclick="addProject()">+ Add</button>
+                    </div>
+                    <div id="project-list"></div>
+                </div>
+
+                <!-- Education -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <span><i class="fas fa-graduation-cap"></i> Education</span>
+                        <button class="btn btn-sm btn-outline-primary" onclick="addEducation()">+ Add</button>
+                    </div>
+                    <div id="education-list"></div>
+                </div>
+
+                <!-- Achievements (new) -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <span><i class="fas fa-trophy"></i> Achievements</span>
+                        <button class="btn btn-sm btn-outline-primary" onclick="addAchievement()">+ Add</button>
+                    </div>
+                    <div id="achievement-list"></div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- PREVIEW PANEL -->
+        <div class="preview-panel">
+            <div class="resume-paper" id="resume-content">
+
+                <!-- Header -->
+                <div id="preview-header">
+                    <div class="preview-header-text">
+                        <div id="preview-name">Your Name</div>
+                        <div id="preview-job-title">Job Title</div>
+                        <div id="preview-contact">
+                            <span id="p-email">email@example.com</span> <br>
+                            <span id="p-phone">+1 234 567 890</span> <br>
+                            <span id="p-location">City, Country</span>
+                        </div>
+                    </div>
+                    <img id="preview-photo" class="preview-photo-print" src="">
+                </div>
+
+                <!-- Summary -->
+                <div class="resume-section" id="sec-summary">
+                    <div class="section-title">Professional Summary</div>
+                    <div class="resume-desc" id="preview-summary">
+                        Write a summary to see it here...
+                    </div>
+                </div>
+
+                <!-- Skills -->
+                <div class="resume-section" id="sec-skills">
+                    <div class="section-title">Technical Skills</div>
+                    <div class="skills-list" id="preview-skills"></div>
+                </div>
+
+                <!-- Experience -->
+                <div class="resume-section" id="sec-experience">
+                    <div class="section-title">Professional Experience</div>
+                    <div id="preview-experience"></div>
+                </div>
+
+                <!-- Projects -->
+                <div class="resume-section" id="sec-projects">
+                    <div class="section-title">Projects</div>
+                    <div id="preview-projects"></div>
+                </div>
+
+                <!-- Education -->
+                <div class="resume-section" id="sec-education">
+                    <div class="section-title">Education</div>
+                    <div id="preview-education"></div>
+                </div>
+
+                <!-- Achievements -->
+                <div class="resume-section" id="sec-achievements">
+                    <div class="section-title">Achievements & Certifications</div>
+                    <div id="preview-achievements"></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // Data Stores
+        let experienceData = [];
+        let projectData = [];
+        let educationData = [];
+        let achievementData = [];
+
+        // Init
+        window.onload = function () {
+            // Add one empty item for each to encourage filling
+            addExperience();
+            addProject();
+            addEducation();
+            addAchievement();
+            updatePreview();
+        };
+
+        // --- Rich Text Helpers ---
+        function execCmd(command, value = null) {
+            document.execCommand(command, false, value);
+
+            // Force update data and preview immediately
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                let node = selection.anchorNode;
+                while (node && !node.classList?.contains('rich-editor')) {
+                    node = node.parentNode;
+                }
+                if (node) {
+                    // Trigger the oninput handler we defined inline
+                    const event = new Event('input', { bubbles: true });
+                    node.dispatchEvent(event);
+                }
+            }
+        }
+
+        // ... existing rich text helpers ...
+
+        // Manual sync for main static fields
+        function syncSummary() {
+            document.getElementById('preview-summary').innerHTML = document.getElementById('summary-editor').innerHTML;
+        }
+        function syncSkills() {
+            document.getElementById('preview-skills').innerHTML = document.getElementById('skills-editor').innerHTML;
+        }
+
+        // --- Core Preview Logic ---
+        function updatePreview() {
+            // Header
+            setText('preview-name', getVal('fullName') || 'Your Name');
+            setText('preview-job-title', getVal('jobTitle') || 'Target Job Title');
+            setText('p-email', getVal('email') || 'email@example.com');
+            setText('p-phone', getVal('phone') || '+1 234 567 890');
+            setText('p-location', getVal('location') || 'City, Country');
+
+            // Note: Summary and Skills update reactively via 'input' event contenteditable directly
+
+            // Lists - Smart Visibility
+            updateSection('preview-experience', 'sec-experience', experienceData, renderExperienceItem);
+            updateSection('preview-projects', 'sec-projects', projectData, renderProjectItem);
+            updateSection('preview-education', 'sec-education', educationData, renderEducationItem);
+            updateSection('preview-achievements', 'sec-achievements', achievementData, renderAchievementItem);
+        }
+
+        // Helper to hide sections if empty
+        function updateSection(containerId, sectionId, data, renderFn) {
+            const container = document.getElementById(containerId);
+            const section = document.getElementById(sectionId);
+
+            // Generate HTML
+            const content = data.map(renderFn).join('');
+            if (container) container.innerHTML = content;
+
+            // Toggle Visibility
+            if (section) {
+                if (content.trim() === '') {
+                    section.style.display = 'none';
+                } else {
+                    section.style.display = 'block';
+                }
+            }
+        }
+
+        function getVal(id) {
+            const el = document.getElementById(id);
+            return el ? el.value : '';
+        }
+        function setText(id, val) {
+            const el = document.getElementById(id);
+            if (el) el.innerHTML = val;
+        }
+
+        // --- Templates for Preview ---
+        function renderExperienceItem(item) {
+            if (!item.role && !item.company && !item.desc) return ''; // Skip if completely fully empty
+            return `
+            <div class="resume-item">
+                <div class="resume-item-header">
+                    <span class="resume-role">${item.role}</span>
+                    <span class="resume-date">${item.date}</span>
+                </div>
+                <div class="resume-company">${item.company}</div>
+                <div class="resume-desc" style="white-space: pre-wrap;">${item.desc}</div>
+            </div>
+        `;
+        }
+
+        function renderProjectItem(item) {
+            if (!item.name && !item.desc) return '';
+            return `
+            <div class="resume-item">
+                <div class="resume-item-header">
+                    <span class="resume-role">${item.name}</span>
+                    <span class="resume-date">${item.tech}</span>
+                </div>
+                <div class="resume-desc" style="white-space: pre-wrap;">${item.desc}</div>
+            </div>
+        `;
+        }
+
+        function renderEducationItem(item) {
+            if (!item.school && !item.degree) return '';
+            const grade = item.grade ? ` | ${item.grade}` : '';
+            return `
+            <div class="resume-item">
+                <div class="resume-item-header">
+                    <span class="resume-role">${item.degree}</span>
+                    <span class="resume-date">${item.date}</span>
+                </div>
+                <div class="resume-company">${item.school}${grade}</div>
+            </div>
+        `;
+        }
+
+        function renderAchievementItem(item) {
+            if (!item.title && !item.desc) return '';
+            return `
+            <div class="resume-item mb-1">
+                <strong>${item.title}</strong>: <span style="display:inline-block">${item.desc}</span>
+            </div>
+        `;
+        }
+
+        // --- Dynamic Rich Editor Generator ---
+        function getRichEditorHTML(id, type, idx, placeholder, initialValue) {
+            return `
+        <div class="rich-text-container" tabindex="0">
+            <div class="rich-toolbar" onmousedown="event.preventDefault()">
+                <select class="rich-select" onchange="execCmd('fontName', this.value); this.value='';" onmousedown="event.stopPropagation()">
+                    <option value="" selected disabled>Font</option>
+                    <option value="Inter">Sans</option>
+                    <option value="Merriweather">Serif</option>
+                    <option value="Times New Roman">Times</option>
+                </select>
+                <select class="rich-select" style="width:60px" onchange="execCmd('fontSize', this.value); this.value='';" onmousedown="event.stopPropagation()">
+                    <option value="" selected disabled>Size</option>
+                    <option value="1">10</option>
+                    <option value="2">13</option>
+                    <option value="3">16</option>
+                    <option value="4">18</option>
+                    <option value="5">24</option>
+                    <option value="6">32</option>
+                    <option value="7">48</option>
+                </select>
+                <div class="vr mx-1"></div>
+                <button class="rich-btn" onclick="execCmd('bold')" title="Bold"><i class="fas fa-bold"></i></button>
+                <button class="rich-btn" onclick="execCmd('italic')" title="Italic"><i class="fas fa-italic"></i></button>
+                <button class="rich-btn" onclick="execCmd('insertUnorderedList')" title="Bullet List"><i class="fas fa-list-ul"></i></button>
+                <button class="rich-btn" onclick="execCmd('justifyLeft')" title="Align Left"><i class="fas fa-align-left"></i></button>
+            </div>
+            <div class="rich-editor" id="${id}" contenteditable="true" placeholder="${placeholder}" 
+                 oninput="updateItem('${type}', ${idx}, 'desc', this.innerHTML)">${initialValue}</div>
+        </div>
+        `;
+        }
+
+        // --- Form Builders ---
+
+        // Experience
+        function addExperience() {
+            experienceData.push({ id: Date.now(), role: '', company: '', date: '', desc: '' });
+            renderGenericForm('experience-list', experienceData, (item, idx) => `
+            <div class="col-6"><input type="text" class="form-control" placeholder="Job Role" value="${item.role}" oninput="updateItem('experience', ${idx}, 'role', this.value)"></div>
+            <div class="col-6"><input type="text" class="form-control" placeholder="Company" value="${item.company}" oninput="updateItem('experience', ${idx}, 'company', this.value)"></div>
+            <div class="col-12"><input type="text" class="form-control" placeholder="Date Range" value="${item.date}" oninput="updateItem('experience', ${idx}, 'date', this.value)"></div>
+            <div class="col-12">
+                ${getRichEditorHTML(`exp-desc-${idx}`, 'experience', idx, 'Role description...', item.desc)}
+                <button class="btn btn-ai w-100" onclick="enhanceText('exp-desc-${idx}', 'experience', ${idx}, this)">
+                     <i class="fas fa-wand-magic-sparkles"></i> AI Enhance
+                     <div class="loading-spinner"></div>
+                </button>
+            </div>
+        `);
+        }
+
+        // Projects
+        function addProject() {
+            projectData.push({ id: Date.now(), name: '', tech: '', desc: '' });
+            renderGenericForm('project-list', projectData, (item, idx) => `
+            <div class="col-6"><input type="text" class="form-control" placeholder="Project Name" value="${item.name}" oninput="updateItem('project', ${idx}, 'name', this.value)"></div>
+            <div class="col-6"><input type="text" class="form-control" placeholder="Tech Stack" value="${item.tech}" oninput="updateItem('project', ${idx}, 'tech', this.value)"></div>
+            <div class="col-12">
+                ${getRichEditorHTML(`proj-desc-${idx}`, 'project', idx, 'Project description...', item.desc)}
+                <button class="btn btn-ai w-100" onclick="enhanceText('proj-desc-${idx}', 'project', ${idx}, this)">
+                     <i class="fas fa-wand-magic-sparkles"></i> AI Enhance
+                     <div class="loading-spinner"></div>
+                </button>
+            </div>
+        `);
+        }
+
+        // Education (Updated)
+        function addEducation() {
+            educationData.push({ id: Date.now(), degree: '', school: '', date: '', grade: '' });
+            renderGenericForm('education-list', educationData, (item, idx) => `
+            <div class="col-12"><input type="text" class="form-control" placeholder="Degree (e.g. B.Tech CS)" value="${item.degree}" oninput="updateItem('education', ${idx}, 'degree', this.value)"></div>
+            <div class="col-12"><input type="text" class="form-control" placeholder="School / University" value="${item.school}" oninput="updateItem('education', ${idx}, 'school', this.value)"></div>
+            <div class="col-6"><input type="text" class="form-control" placeholder="Year" value="${item.date}" oninput="updateItem('education', ${idx}, 'date', this.value)"></div>
+            <div class="col-6"><input type="text" class="form-control" placeholder="CGPA / % (e.g. 9.5 CGPA)" value="${item.grade}" oninput="updateItem('education', ${idx}, 'grade', this.value)"></div>
+        `);
+        }
+
+        // Achievements
+        function addAchievement() {
+            achievementData.push({ id: Date.now(), title: '', desc: '' });
+            renderGenericForm('achievement-list', achievementData, (item, idx) => `
+            <div class="col-12"><input type="text" class="form-control fw-bold" placeholder="Title (e.g. Hackathon Winner)" value="${item.title}" oninput="updateItem('achievement', ${idx}, 'title', this.value)"></div>
+            <div class="col-12">
+                 ${getRichEditorHTML(`ach-desc-${idx}`, 'achievement', idx, 'Details about achievement...', item.desc)}
+            </div>
+        `);
+        }
+
+        // Generic Render
+        function renderGenericForm(containerId, data, htmlFn) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = data.map((item, idx) => `
+            <div class="bg-light border rounded p-3 mb-2 position-relative">
+                <button class="btn btn-sm text-danger position-absolute top-0 end-0 m-1" onclick="deleteItem('${containerId.split('-')[0]}', ${idx})">&times;</button>
+                <div class="row g-2">
+                    ${htmlFn(item, idx)}
+                </div>
+            </div>
+        `).join('');
+        }
+
+        // --- State Management ---
+        window.updateItem = function (type, idx, field, val) {
+            if (type === 'experience') experienceData[idx][field] = val;
+            if (type === 'project') projectData[idx][field] = val;
+            if (type === 'education') educationData[idx][field] = val;
+            if (type === 'achievement') achievementData[idx][field] = val;
+            updatePreview();
+        };
+
+        window.deleteItem = function (type, idx) {
+            if (type === 'experience') experienceData.splice(idx, 1);
+            if (type === 'project') projectData.splice(idx, 1);
+            if (type === 'education') educationData.splice(idx, 1);
+            if (type === 'achievement') achievementData.splice(idx, 1);
+
+            // Re-render Form
+            if (type === 'experience') { const e = [...experienceData]; experienceData = []; e.forEach(x => experienceData.push(x)); renderExpFormOnly(); }
+            if (type === 'project') { const e = [...projectData]; projectData = []; e.forEach(x => projectData.push(x)); renderProjFormOnly(); }
+            if (type === 'education') { const e = [...educationData]; educationData = []; e.forEach(x => educationData.push(x)); renderEduFormOnly(); }
+            if (type === 'achievement') { const e = [...achievementData]; achievementData = []; e.forEach(x => achievementData.push(x)); renderAchFormOnly(); }
+
+            updatePreview();
+        };
+
+        // Quick helpers to re-render forms (DRY violation but quick fix for now)
+        function renderExpFormOnly() {
+            renderGenericForm('experience-list', experienceData, (item, idx) => `
+            <div class="col-6"><input type="text" class="form-control" placeholder="Job Role" value="${item.role}" oninput="updateItem('experience', ${idx}, 'role', this.value)"></div>
+            <div class="col-6"><input type="text" class="form-control" placeholder="Company" value="${item.company}" oninput="updateItem('experience', ${idx}, 'company', this.value)"></div>
+            <div class="col-12"><input type="text" class="form-control" placeholder="Date Range" value="${item.date}" oninput="updateItem('experience', ${idx}, 'date', this.value)"></div>
+            <div class="col-12">
+                ${getRichEditorHTML(`exp-desc-${idx}`, 'experience', idx, 'Role description...', item.desc)}
+                <button class="btn btn-ai w-100" onclick="enhanceText('exp-desc-${idx}', 'experience', ${idx}, this)">
+                     <i class="fas fa-wand-magic-sparkles"></i> AI Enhance
+                     <div class="loading-spinner"></div>
+                </button>
+            </div>
+        `, removeItem.bind(null, 'experience'));
+        }
+        function renderProjFormOnly() {
+            renderGenericForm('project-list', projectData, (item, idx) => `
+            <div class="col-6"><input type="text" class="form-control" placeholder="Project Name" value="${item.name}" oninput="updateItem('project', ${idx}, 'name', this.value)"></div>
+            <div class="col-6"><input type="text" class="form-control" placeholder="Tech Stack" value="${item.tech}" oninput="updateItem('project', ${idx}, 'tech', this.value)"></div>
+            <div class="col-12">
+                ${getRichEditorHTML(`proj-desc-${idx}`, 'project', idx, 'Project description...', item.desc)}
+               <button class="btn btn-ai w-100" onclick="enhanceText('proj-desc-${idx}', 'project', ${idx}, this)">
+                     <i class="fas fa-wand-magic-sparkles"></i> AI Enhance
+                     <div class="loading-spinner"></div>
+                </button>
+            </div>
+        `, removeItem.bind(null, 'project'));
+        }
+        function renderEduFormOnly() {
+            renderGenericForm('education-list', educationData, (item, idx) => `
+            <div class="col-12"><input type="text" class="form-control" placeholder="Degree" value="${item.degree}" oninput="updateItem('education', ${idx}, 'degree', this.value)"></div>
+            <div class="col-12"><input type="text" class="form-control" placeholder="School" value="${item.school}" oninput="updateItem('education', ${idx}, 'school', this.value)"></div>
+            <div class="col-6"><input type="text" class="form-control" placeholder="Year" value="${item.date}" oninput="updateItem('education', ${idx}, 'date', this.value)"></div>
+            <div class="col-6"><input type="text" class="form-control" placeholder="CGPA/Grade" value="${item.grade}" oninput="updateItem('education', ${idx}, 'grade', this.value)"></div>
+        `);
+        }
+        function renderAchFormOnly() {
+            renderGenericForm('achievement-list', achievementData, (item, idx) => `
+            <div class="col-12"><input type="text" class="form-control fw-bold" placeholder="Title" value="${item.title}" oninput="updateItem('achievement', ${idx}, 'title', this.value)"></div>
+            <div class="col-12">
+                 ${getRichEditorHTML(`ach-desc-${idx}`, 'achievement', idx, 'Detail about achievement...', item.desc)}
+            </div>
+        `);
+        }
+
+
+        // --- AI Features ---
+        function uploadPhoto(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById('form-photo-preview').src = e.target.result;
+                document.getElementById('form-photo-preview').style.display = 'block';
+                document.getElementById('form-photo-text').style.display = 'none';
+
+                // Preview
+                document.getElementById('preview-photo').src = e.target.result;
+                document.getElementById('preview-photo').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function suggestSkills(btn) {
+            const title = document.getElementById('jobTitle').value;
+            if (!title) return Swal.fire('Info', 'Enter a job title first!', 'info');
+
+            btn.disabled = true;
+            btn.querySelector('.loading-spinner').style.display = 'inline-block';
+
+            try {
+                const res = await fetch('/api/suggest_skills', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ job_title: title })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    // For Skills, we need to inject HTML differently since it's a rich editor now
+                    document.getElementById('skills-editor').innerHTML = data.skills;
+                    syncSkills();
+                } else {
+                    Swal.fire('Error', data.message, 'error');
+                }
+            } catch (e) { Swal.fire('Error', 'Connection failed', 'error'); }
+            finally {
+                btn.disabled = false;
+                btn.querySelector('.loading-spinner').style.display = 'none';
+            }
+        }
+
+        async function enhanceText(inputId, type, idx, btn) {
+            const text = document.getElementById(inputId).innerText; // Use innerText to get clean text for AI
+            if (!text) return Swal.fire('Info', 'Write something to enhance!', 'info');
+
+            btn.disabled = true;
+            btn.querySelector('.loading-spinner').style.display = 'inline-block';
+
+            try {
+                const res = await fetch('/api/enhance_experience', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: text })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    // Convert bullets to HTML UL/LI
+                    let html = '<ul>';
+                    const lines = data.enhanced_text.split('\\n');
+                    lines.forEach(line => {
+                        const clean = line.replace('*', '').trim();
+                        if (clean) html += `<li>${clean}</li>`;
+                    });
+                    html += '</ul>';
+
+                    document.getElementById(inputId).innerHTML = html;
+                    updateItem(type, idx, 'desc', html);
+                } else {
+                    Swal.fire('Error', data.message, 'error');
+                }
+            } catch (e) { Swal.fire('Error', 'Connection failed', 'error'); }
+            finally {
+                btn.disabled = false;
+                btn.querySelector('.loading-spinner').style.display = 'none';
+            }
+        }
+
+        // --- PDF ---
+        function downloadPDF() {
+            const element = document.getElementById('resume-content');
+            const opt = {
+                margin: 0,
+                filename: 'MyResume.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+
+    </script>
+
+</body>
+
+</html>

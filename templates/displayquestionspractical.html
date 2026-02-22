@@ -1,0 +1,114 @@
+{% extends 'professor_dashboard.html' %}
+{% block body %}
+<div class="row align-items-center d-flex  justify-content-center">
+    <div class="col-12 mb-4">
+        <div class="card border-light shadow-sm components-section align-items-center d-flex  justify-content-center">
+            <div class="card-body align-items-center d-flex justify-content-center">
+                <div class="row mb-4">
+                    <div class="col-lg-12 col-sm-16">
+                        <h3 class="h3 text-center">DISPLAY QUESTIONS</h3>
+                    </div>
+                    <div class="card-body justify-content-md-center">
+                        <div class="table-responsive">
+                            <table id="example" class="display nowrap" style="width:100%">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th class="border-0" scope="col">QID</th>
+                                        <th class="border-0" scope="col">QUESTION</th>
+                                        <th class="border-0" scope="col">COMPILER/INTREPRETER</th>
+                                        <th class="border-0" scope="col">MARKS</th>
+                                    </tr>
+                                <tbody>
+                                    {% for res in callresults%}
+                                    <tr>
+                                        <td>{{res['qid']}}</td>
+                                        <td>{{res['q'] | safe}}</td>
+                                        <td>{{res['compiler']}}</td>
+                                        <td>{{res['marks']}}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        var table = $('#example').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ]
+        });
+
+        // Function to process boilerplates
+        function processBoilerplates() {
+            // Use attribute selector to find all elements with id='boilerplates_data'
+            // because generic ID usage in loop creates duplicates
+            var boilerplates = document.querySelectorAll('[id="boilerplates_data"]');
+
+            boilerplates.forEach(function (bpDiv, index) {
+                // Check if already processed
+                if (bpDiv.previousElementSibling && bpDiv.previousElementSibling.classList.contains('boilerplate-toggle')) {
+                    return;
+                }
+
+                // Hide it by default if not already
+                bpDiv.style.display = 'none';
+
+                // Create Toggle Button
+                var btn = document.createElement('button');
+                btn.className = 'btn btn-sm btn-info mb-2 boilerplate-toggle';
+                btn.innerText = 'Show Boilerplate';
+                btn.type = 'button';
+
+                btn.onclick = function () {
+                    if (bpDiv.style.display === 'none') {
+                        bpDiv.style.display = 'block';
+                        btn.innerText = 'Hide Boilerplate';
+                    } else {
+                        bpDiv.style.display = 'none';
+                        btn.innerText = 'Show Boilerplate';
+                    }
+                };
+
+                // Insert button before the div
+                bpDiv.parentNode.insertBefore(btn, bpDiv);
+            });
+
+            // Also handle hidden cases if any
+            var hiddenCases = document.querySelectorAll('[id="hidden_cases_data"]');
+            hiddenCases.forEach(function (hcDiv) {
+                if (hcDiv.previousElementSibling && hcDiv.previousElementSibling.classList.contains('hc-toggle')) return;
+
+                hcDiv.style.display = 'none';
+                var btn = document.createElement('button');
+                btn.className = 'btn btn-sm btn-warning mb-2 hc-toggle';
+                btn.innerText = 'Show Hidden Cases';
+                btn.type = 'button';
+
+                btn.onclick = function () {
+                    if (hcDiv.style.display === 'none') {
+                        hcDiv.style.display = 'block';
+                        btn.innerText = 'Hide Hidden Cases';
+                    } else {
+                        hcDiv.style.display = 'none';
+                        btn.innerText = 'Show Hidden Cases';
+                    }
+                };
+                hcDiv.parentNode.insertBefore(btn, hcDiv);
+            });
+        }
+
+        // Run on load and on table draw (pagination/sort)
+        processBoilerplates();
+        table.on('draw', function () {
+            processBoilerplates();
+        });
+    });
+</script>
+{% endblock %}

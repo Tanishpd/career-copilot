@@ -1,0 +1,301 @@
+<title>MyProctor.ai</title>
+
+<!-- Bootstrap 5 CDN -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+  /* Custom Dashboard CSS (Replacing Volt) */
+  :root {
+    --primary: #262B40;
+    --secondary: #2E3650;
+    --accent: #00d4ff;
+    --text-light: #e0e0e0;
+    --bg-light: #f5f8fb;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-light);
+    overflow-x: hidden;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 250px;
+    background-color: var(--primary);
+    color: white;
+    transition: all 0.3s;
+    z-index: 1000;
+    overflow-y: auto;
+  }
+
+  .sidebar .nav-link {
+    color: rgba(255, 255, 255, 0.7);
+    padding: 12px 20px;
+    border-left: 3px solid transparent;
+    transition: all 0.2s;
+  }
+
+  .sidebar .nav-link:hover,
+  .sidebar .nav-link.active {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-left-color: var(--accent);
+  }
+
+  .sidebar .sidebar-icon {
+    width: 25px;
+    text-align: center;
+    margin-right: 10px;
+  }
+
+  .user-card img {
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    width: 80px;
+  }
+
+  /* Main Content */
+  .content {
+    margin-left: 250px;
+    padding: 20px;
+    transition: all 0.3s;
+    min-height: 100vh;
+  }
+
+  /* Navbar */
+  .navbar-dashboard {
+    background: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    padding: 10px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+
+  /* Cards */
+  .card {
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+
+  .card-header {
+    background: white;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 15px 20px;
+    font-weight: 600;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .sidebar {
+      margin-left: -250px;
+    }
+
+    .sidebar.show {
+      margin-left: 0;
+    }
+
+    .content {
+      margin-left: 0;
+    }
+  }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+
+{% block head %}{% endblock %}
+</head>
+
+<body>
+  <script type="text/javascript">
+    // Simplified Inline JS
+
+    // Sidebar Toggle Logic
+    document.addEventListener('DOMContentLoaded', function () {
+      const toggleBtn = document.querySelector('.navbar-toggler');
+      const sidebar = document.querySelector('.sidebar');
+
+      if (toggleBtn && sidebar) {
+        toggleBtn.addEventListener('click', function () {
+          sidebar.classList.toggle('show');
+        });
+      }
+    });
+
+    window.addEventListener('selectstart', function (e) { e.preventDefault(); });
+    $(document).ready(function () {
+      //Disable cut copy paste
+      $('body').bind('select cut copy paste', function (e) {
+        e.preventDefault();
+      });
+
+      //Disable mouse right click
+      $("body").on("contextmenu", function (e) {
+        return false;
+      });
+    });
+    /** TO DISABLE SCREEN CAPTURE **/
+    document.addEventListener('keyup', (e) => {
+      if (e.key == 'PrintScreen') {
+        navigator.clipboard.writeText('');
+        alert('Screenshots disabled!');
+      }
+    });
+
+    /** TO DISABLE PRINTS WHIT CTRL+P **/
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.key == 'p') {
+        alert('This section is not allowed to print or export to PDF');
+        e.cancelBubble = true;
+        e.preventDefault();
+        e.stopImmediatePropagation();
+      }
+    });
+
+    function funLogout() {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "Do you really want to logout?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Logout me!',
+        cancelButtonText: 'No!',
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#202124',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            type: "POST",
+            url: "/logout",
+            success: function (response) {
+              if (response == "success") {
+                window.location.href = "/";
+              }
+            }
+          });
+        }
+      })
+    }
+
+    function funStartExam() {
+      Swal.fire({
+        title: '<strong>BEFORE EXAM LOGIN RULES</strong>',
+        icon: 'warning',
+        html:
+          '<h5>ONLINE EXAM RULES TO BE FOLLOWED STRICTLY</h5>, ' +
+          '<ol><li>Dont minimize the window it will be monitored.</li><li>Check that your camera is proper.</li><li>Dont try to use mobile or any other material it will be monitored and strict action will be taken.</li><li>Use calculator which is given by our system not from your laptop/desktop/mobile.</li><li>Dont use incognito browser & also check that your cookies are enabled.</li><li>Any problem occurs call directly to customer care +91 9320907041 or care@narenderkeswani.com.</li></ol>',
+        confirmButtonColor: '#202124',
+        confirmButtonText: 'OK, BEGIN EXAM!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = "/give-test";
+        }
+      })
+    }
+  </script>
+
+  <nav class="navbar navbar-dark bg-dark px-4 col-12 d-md-none">
+    <a class="navbar-brand me-lg-5" href="/professor_index">
+      MyProctor.ai
+    </a>
+    <button class="navbar-toggler" type="button">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  </nav>
+
+  <nav id="sidebarMenu" class="sidebar">
+    <div class="sidebar-inner px-4 pt-3">
+      <div
+        class="user-card d-flex flex-column align-items-center justify-content-center pb-4 border-bottom border-secondary mb-4">
+        <div class="user-avatar mb-3">
+          <img src="{{ url_for('static', filename='user-profile.png') }}" class="rounded-circle" alt="User">
+        </div>
+        <h2 class="h6 mb-0">{{session.name}}</h2>
+        <small class="text-muted">Student</small>
+      </div>
+
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a href="#" onclick="return funStartExam()" class="nav-link">
+            <span class="sidebar-icon"><i class="fas fa-clipboard-list"></i></span>
+            <span class="sidebar-text">Give Exam</span>
+          </a>
+        </li>
+
+        <li class="nav-item ">
+          <a href="/{{session.email}}/student_test_history" class="nav-link">
+            <span class="sidebar-icon"><i class="fas fa-history"></i></span>
+            <span class="sidebar-text">Exam History</span>
+          </a>
+        </li>
+
+        <li class="nav-item ">
+          <a href="/{{session.email}}/tests-given" class="nav-link">
+            <span class="sidebar-icon"><i class="fas fa-poll"></i></span>
+            <span class="sidebar-text">Results</span>
+          </a>
+        </li>
+        <li class="nav-item ">
+          <a href="/report_student" class="nav-link">
+            <span class="sidebar-icon"><i class="fas fa-bug"></i></span>
+            <span class="sidebar-text">Report Problems</span>
+          </a>
+        </li>
+        <li class="nav-item ">
+          <a href="/resume_builder" class="nav-link">
+            <span class="sidebar-icon"><i class="fas fa-file-alt"></i></span>
+            <span class="sidebar-text">Resume Builder</span>
+          </a>
+        </li>
+        <li class="nav-item ">
+          <a href="/ats_calculator" class="nav-link">
+            <span class="sidebar-icon"><i class="fas fa-calculator"></i></span>
+            <span class="sidebar-text">ATS Score Calculator</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/changepassword_student" class="nav-link">
+            <span class="sidebar-icon"><i class="fas fa-key"></i></span>
+            <span class="sidebar-text">Change Password</span>
+          </a>
+        </li>
+
+        <li class="nav-item mt-5">
+          <a href="#" onclick="return funLogout()" class="nav-link text-danger">
+            <span class="sidebar-icon"><i class="fas fa-sign-out-alt"></i></span>
+            <span class="sidebar-text">Logout</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="content">
+    <!-- Top Navbar (Optional, for Breadcrumbs or User Menu) -->
+    <!-- Main Content Block -->
+    {% include 'includes/_messages.html' %}
+    {% block body %}{% endblock %}
+
+    <footer class="mt-5 text-center text-muted small">
+      <p>Copyright © MyProctor.ai
+        <script>document.write(new Date().getFullYear())</script>. All rights reserved.
+      </p>
+    </footer>
+  </main>
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

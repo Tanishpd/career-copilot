@@ -1,0 +1,417 @@
+[
+  {
+    "name": "models/gemini-2.5-flash",
+    "display_name": "Gemini 2.5 Flash",
+    "description": "Stable version of Gemini 2.5 Flash, our mid-size multimodal model that supports up to 1 million tokens, released in June of 2025.",
+    "supported_generation_methods": [
+      "generateContent",
+      "countTokens",
+      "createCachedContent",
+      "batchGenerateContent"
+    ]
+  },
+  {
+    "name": "models/gemini-2.5-pro",
+    "display_name": "Gemini 2.5 Pro",
+    "description": "Stable release (June 17th, 2025) of Gemini 2.5 Pro",
+    "supported_generation_methods": [
+      "generateContent",
+      "countTokens",
+      "createCachedContent",
+      "batchGenerateContent"
+    ]
+  },
+  {
+    "name": "models/gemini-2.0-flash",
+    "display_name": "Gemini 2.0 Flash",
+    "description": "Gemini 2.0 Flash",
+    "supported_generation_methods": [
+      "generateContent",
+      "countTokens",
+      "createCachedContent",
+      "batchGenerateContent"
+    ]
+  },
+  {
+    "name": "models/gemini-2.0-flash-001",
+    "display_name": "Gemini 2.0 Flash 001",
+    "description": "Stable version of Gemini 2.0 Flash, our fast and versatile multimodal model for scaling across diverse tasks, released in January of 2025.",
+    "supported_generation_methods": [
+      "generateContent",
+      "countTokens",
+      "createCachedContent",
+      "batchGenerateContent"
+    ]
+  },
+  {
+    "name": "models/gemini-2.0-flash-exp-image-generation",
+    "display_name": "Gemini 2.0 Flash (Image Generation) Experimental",
+    "description": "Gemini 2.0 Flash (Image Generation) Experimental",
+    "supported_generation_methods": [
+      "generateContent",
+      "countTokens",
+      "bidiGenerateContent"
+    ]
+  },
+  {
+    "name": "models/gemini-2.0-flash-lite-001",
+    "display_name": "Gemini 2.0 Flash-Lite 001",
+    "description": "Stable version of Gemini 2.0 Flash-Lite",
+    "supported_generation_methods": [
+      "generateContent",
+      "countTokens",
+      "createCachedContent",
+      "batchGenerateContent"
+    ]
+  },
+  {
+    "name": "models/gemini-2.0-flash-lite",
+    "display_name": "Gemini 2.0 Flash-Lite",
+    "description": "Gemini 2.0 Flash-Lite",
+    "supported_generation_methods": [
+      "generateContent",
+      "countTokens",
+      "createCachedContent",
+      "batchGenerateContent"
+    ]
+  },
+  {
+    "name": "models/gemini-2.5-flash-preview-tts",
+    "display_name": "Gemini 2.5 Flash Preview TTS",
+    "description": "Gemini 2.5 Flash Preview TTS",
+    "supported_generation_methods": [
+      "countTokens",
+      "generateContent"
+    ]
+  },
+  {
+    "name": "models/gemini-2.5-pro-preview-tts",
+    "display_name": "Gemini 2.5 Pro Preview TTS",
+    "description": "Gemini 2.5 Pro Preview TTS",
+    "supported_generation_methods": [
+      "countTokens",
+      "generateContent",
+      "batchGenerateContent"
+    ]
+  },
+  {
+    "name": "models/gemma-3-1b-it",
+    "display_name": "Gemma 3 1B",
+    "description": "",
+    "supported_generation_methods": [
+      "generateContent",
+      "countTokens"
+    ]
+  },
+  {
+    "name": "models/gemma-3-4b-it",
+    "display_name": "Gemma 3 4B",
+    "description": "",
+    "supported_generation_methods": [
+      "generateContent",
+      "countTokens"
+    ]
+  },
+  {
+    "name": "models/gemma-3-12b-it",
+    "display_name": "Gemma 3 12B",
+    "description": "",
+    "supported_generation_methods": [
+      "generateContent",
+      "countTokens"
+    ]
+  },
+  {
+    "name": "models/gemma-3-27b-it",
+    "display_name": "Gemma 3 27B",
+    "description": "",
+    "supported_generation_methods": [
+      "generateContent",
+      "countTokens"
+    ]
+  },
+  {
+    "name": "models/gemma-3n-e4b-it",
+    "display_name": "Gemma 3n E4B",
+    "description": "",
+    "supported_generation_methods": [
+      "generateContent",
+      "countTokens"
+    ]
+  },
+  {
+    "name": "models/gemma-3n-e2b-it",
+    "display_name": "Gemma 3n E2B",
+    "description": "",
+    "supported_generation_methods": [
+      "generateContent",
+      "countTokens"
+    ]
+  },
+  {
+    "name": "models/gemini-flash-latest",
+    "display_name": "Gemini Flash Latest",
+    "description": "Latest release of Gemini Flash",
+    "supported_generation_methods": [
+      "generateContent",
+      "countTokens",
+      "createCachedContent",
+      "batchGenerateContent"
+    ]
+  },
+  {
+    "name": "models/gemini-flash-lite-latest",
+    "display_name": "Gemini Flash-Lite Latest",
+    "description": "Latest release of Gemini Flash-Lite",
+    "supported_generation_methods": [
+      "generateContent",
+      "countTokens",
+      "createCachedContent",
+      "batchGenerateContent"
+    ]
+  },
+  {
+    "name": "models/gemini-pro-latest",
+    "display_name": "Gemini Pro Latest",
+    "description": "Latest release of Gemini Pro",
+    "supported_generation_methods": [
+      "generateContent",
+      "countTokens",
+      "createCachedContent",
+      "batchGenerateContent"
+    ]
+  },
+  {
+    "name": "models/gemini-2.5-flash-lite",
+    "display_name": "Gemini 2.5 Flash-Lite",
+    "description": "Stable version of Gemini 2.5 Flash-Lite, released in July of 2025",
+    "supported_generation_methods": [
+      "generateContent",
+      "countTokens",
+      "createCachedContent",
+      "batchGenerateContent"
+    ]
+  },
+  {
+    "name": "models/gemini-2.5-flash-image",
+    "display_name": "Nano Banana",
+    "description": "Gemini 2.5 Flash Preview Image",
+    "supported_generation_methods": [
+      "generateContent",
+      "countTokens",
+      "batchGenerateContent"
+    ]
+  },
+  {
+    "name": "models/gemini-2.5-flash-lite-preview-09-2025",
+    "display_name": "Gemini 2.5 Flash-Lite Preview Sep 2025",
+    "description": "Preview release (Septempber 25th, 2025) of Gemini 2.5 Flash-Lite",
+    "supported_generation_methods": [
+      "generateContent",
+      "countTokens",
+      "createCachedContent",
+      "batchGenerateContent"
+    ]
+  },
+  {
+    "name": "models/gemini-3-pro-preview",
+    "display_name": "Gemini 3 Pro Preview",
+    "description": "Gemini 3 Pro Preview",
+    "supported_generation_methods": [
+      "generateContent",
+      "countTokens",
+      "createCachedContent",
+      "batchGenerateContent"
+    ]
+  },
+  {
+    "name": "models/gemini-3-flash-preview",
+    "display_name": "Gemini 3 Flash Preview",
+    "description": "Gemini 3 Flash Preview",
+    "supported_generation_methods": [
+      "generateContent",
+      "countTokens",
+      "createCachedContent",
+      "batchGenerateContent"
+    ]
+  },
+  {
+    "name": "models/gemini-3.1-pro-preview",
+    "display_name": "Gemini 3.1 Pro Preview",
+    "description": "Gemini 3.1 Pro Preview",
+    "supported_generation_methods": [
+      "generateContent",
+      "countTokens",
+      "createCachedContent",
+      "batchGenerateContent"
+    ]
+  },
+  {
+    "name": "models/gemini-3.1-pro-preview-customtools",
+    "display_name": "Gemini 3.1 Pro Preview Custom Tools",
+    "description": "Gemini 3.1 Pro Preview optimized for custom tool usage",
+    "supported_generation_methods": [
+      "generateContent",
+      "countTokens",
+      "createCachedContent",
+      "batchGenerateContent"
+    ]
+  },
+  {
+    "name": "models/gemini-3-pro-image-preview",
+    "display_name": "Nano Banana Pro",
+    "description": "Gemini 3 Pro Image Preview",
+    "supported_generation_methods": [
+      "generateContent",
+      "countTokens",
+      "batchGenerateContent"
+    ]
+  },
+  {
+    "name": "models/nano-banana-pro-preview",
+    "display_name": "Nano Banana Pro",
+    "description": "Gemini 3 Pro Image Preview",
+    "supported_generation_methods": [
+      "generateContent",
+      "countTokens",
+      "batchGenerateContent"
+    ]
+  },
+  {
+    "name": "models/gemini-robotics-er-1.5-preview",
+    "display_name": "Gemini Robotics-ER 1.5 Preview",
+    "description": "Gemini Robotics-ER 1.5 Preview",
+    "supported_generation_methods": [
+      "generateContent",
+      "countTokens"
+    ]
+  },
+  {
+    "name": "models/gemini-2.5-computer-use-preview-10-2025",
+    "display_name": "Gemini 2.5 Computer Use Preview 10-2025",
+    "description": "Gemini 2.5 Computer Use Preview 10-2025",
+    "supported_generation_methods": [
+      "generateContent",
+      "countTokens"
+    ]
+  },
+  {
+    "name": "models/deep-research-pro-preview-12-2025",
+    "display_name": "Deep Research Pro Preview (Dec-12-2025)",
+    "description": "Preview release (December 12th, 2025) of Deep Research Pro",
+    "supported_generation_methods": [
+      "generateContent",
+      "countTokens"
+    ]
+  },
+  {
+    "name": "models/gemini-embedding-001",
+    "display_name": "Gemini Embedding 001",
+    "description": "Obtain a distributed representation of a text.",
+    "supported_generation_methods": [
+      "embedContent",
+      "countTextTokens",
+      "countTokens",
+      "asyncBatchEmbedContent"
+    ]
+  },
+  {
+    "name": "models/aqa",
+    "display_name": "Model that performs Attributed Question Answering.",
+    "description": "Model trained to return answers to questions that are grounded in provided sources, along with estimating answerable probability.",
+    "supported_generation_methods": [
+      "generateAnswer"
+    ]
+  },
+  {
+    "name": "models/imagen-4.0-generate-001",
+    "display_name": "Imagen 4",
+    "description": "Vertex served Imagen 4.0 model",
+    "supported_generation_methods": [
+      "predict"
+    ]
+  },
+  {
+    "name": "models/imagen-4.0-ultra-generate-001",
+    "display_name": "Imagen 4 Ultra",
+    "description": "Vertex served Imagen 4.0 ultra model",
+    "supported_generation_methods": [
+      "predict"
+    ]
+  },
+  {
+    "name": "models/imagen-4.0-fast-generate-001",
+    "display_name": "Imagen 4 Fast",
+    "description": "Vertex served Imagen 4.0 Fast model",
+    "supported_generation_methods": [
+      "predict"
+    ]
+  },
+  {
+    "name": "models/veo-2.0-generate-001",
+    "display_name": "Veo 2",
+    "description": "Vertex served Veo 2 model. Access to this model requires billing to be enabled on the associated Google Cloud Platform account. Please visit https://console.cloud.google.com/billing to enable it.",
+    "supported_generation_methods": [
+      "predictLongRunning"
+    ]
+  },
+  {
+    "name": "models/veo-3.0-generate-001",
+    "display_name": "Veo 3",
+    "description": "Veo 3",
+    "supported_generation_methods": [
+      "predictLongRunning"
+    ]
+  },
+  {
+    "name": "models/veo-3.0-fast-generate-001",
+    "display_name": "Veo 3 fast",
+    "description": "Veo 3 fast",
+    "supported_generation_methods": [
+      "predictLongRunning"
+    ]
+  },
+  {
+    "name": "models/veo-3.1-generate-preview",
+    "display_name": "Veo 3.1",
+    "description": "Veo 3.1",
+    "supported_generation_methods": [
+      "predictLongRunning"
+    ]
+  },
+  {
+    "name": "models/veo-3.1-fast-generate-preview",
+    "display_name": "Veo 3.1 fast",
+    "description": "Veo 3.1 fast",
+    "supported_generation_methods": [
+      "predictLongRunning"
+    ]
+  },
+  {
+    "name": "models/gemini-2.5-flash-native-audio-latest",
+    "display_name": "Gemini 2.5 Flash Native Audio Latest",
+    "description": "Latest release of Gemini 2.5 Flash Native Audio",
+    "supported_generation_methods": [
+      "countTokens",
+      "bidiGenerateContent"
+    ]
+  },
+  {
+    "name": "models/gemini-2.5-flash-native-audio-preview-09-2025",
+    "display_name": "Gemini 2.5 Flash Native Audio Preview 09-2025",
+    "description": "Gemini 2.5 Flash Native Audio Preview 09-2025",
+    "supported_generation_methods": [
+      "countTokens",
+      "bidiGenerateContent"
+    ]
+  },
+  {
+    "name": "models/gemini-2.5-flash-native-audio-preview-12-2025",
+    "display_name": "Gemini 2.5 Flash Native Audio Preview 12-2025",
+    "description": "Gemini 2.5 Flash Native Audio Preview 12-2025",
+    "supported_generation_methods": [
+      "countTokens",
+      "bidiGenerateContent"
+    ]
+  }
+]
