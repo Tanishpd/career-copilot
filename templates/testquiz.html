@@ -1,0 +1,763 @@
+{% extends 'exam_layout.html' %}
+{% block body %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript"> var answers = "{{answers}}";</script>
+<script>var tid = "{{tid}}";</script>
+<main>
+  <section class="d-flex align-items-center my-5 mt-lg-6 mb-lg-5">
+    <div class="container">
+      <div class="col-12 d-flex align-items-center justify-content-center">
+        <div class="bg-white shadow-soft border rounded border-light p-4 p-lg-5 w-100 fmxw-900">
+          <div class="text-center text-md-center mb-4 mt-md-0">
+            <div class="card-body">
+              <div class="row">
+                <div class="col"><span>
+                    <h4 class="display-6">Name: {{session['name']}}</h4>
+                  </span></div>
+                <div class="col"><span>
+                    <h4 class="display-6">Email: {{session['email']}}</h4>
+                  </span></div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group col-3">
+              <div class="mb-0 h6">
+                SUBJECT: {{subject}}
+              </div>
+            </div>
+            <div class="form-group col-3">
+              <div class="mb-0 h6">
+                TOPIC: {{topic}}
+              </div>
+            </div>
+            <div class="form-group col-3">
+              <div class="mb-0 h6">
+                EXAM-ID: {{tid}}
+              </div>
+            </div>
+            <div class="form-group col-3">
+              <div class="mb-0 h6">
+                TIME LEFT:<div id="time">{{duration}} </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="container">
+              <div id="overlay">
+                <div class="row" id="question-list">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="mb-0 h4">
+              <div id='queid'>Q.</div>
+              <div id="que">{{ q }}</div>
+              <div id='mark'> [MAX MARKS: {{ marks}}] </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="h6" for="exampleFormControlTextarea1">Select your Answer</label>
+            <table id="options" class="table">
+              <tr>
+                <td id='a'>𝐀. {{ a }}</td>
+              </tr>
+              <tr>
+                <td id='b'>𝐁. {{ b }}</td>
+              </tr>
+              <tr>
+                <td id='c'>𝐂. {{ c }}</td>
+              </tr>
+              <tr>
+                <td id='d'>𝐃. {{ d }}</td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="row">
+            <div class="form-group col-3">
+              <div class="mb-0 h6">
+                <input type="button" value="Prev" id="prev" class="btn btn-primary btn-rounded">
+              </div>
+            </div>
+            <div class="form-group col-3">
+              <div class="mb-0 h6">
+                <input type="button" value="Next" id="next" class="btn btn-primary btn-rounded">
+              </div>
+            </div>
+            <div class="form-group col-3">
+              <div class="mb-0 h6">
+                <input type="button" value="Submit" id="submit" class="btn btn-success btn-rounded">
+              </div>
+            </div>
+            <div class="form-group col-3">
+              <div class="mb-0 h6">
+                <button class="btn btn-primary btn-rounded" id="bookmark">Bookmark</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="btn btn-block btn-primary" id="finish">Finish Test</div>
+          </div>
+
+          <div class="form-group">
+            <div class="container" id="calccheck" style="display: none;">
+              <iframe src="/calc" style="height:500px;width:500px;" title="Iframe Example"></iframe>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="container">
+              <div class="justify-content-center align-items-center">
+                <div id="otEmbedContainer" id="livecheck" style="width:320px; height:320px; display: none;">
+                  <script
+                    src="https://tokbox.com/embed/embed/ot-embed.js?embedId=2020dbd9-0a89-472d-a60b-ca12ddfd48bc&room={{tid}}"></script>
+                </div>
+              </div>
+            </div>
+
+            <!-- Enhanced Proctoring Feed -->
+            <style>
+              #proctoring-feed-container {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                width: 200px;
+                border: 2px solid #dc3545;
+                z-index: 1060;
+                background: black;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+                border-radius: 8px;
+                overflow: hidden;
+                cursor: move;
+              }
+
+              .proctor-header {
+                padding: 5px 10px;
+                background: #dc3545;
+                color: white;
+                font-size: 12px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              }
+
+              .proctor-content {
+                height: 150px;
+                transition: height 0.3s ease;
+              }
+
+              #proctoring-feed-container.collapsed .proctor-content {
+                height: 0;
+              }
+
+              .btn-toggle-proctor {
+                background: none;
+                border: none;
+                color: white;
+                cursor: pointer;
+                font-size: 14px;
+                padding: 0 5px;
+              }
+            </style>
+
+            <div id="videocheck" style="display: none;">
+              <div id="proctoring-feed-container">
+                <div class="proctor-header" id="proctor-header">
+                  <span>Proctoring Feed</span>
+                  <div>
+                    <button class="btn-toggle-proctor" onclick="stopProctoring()" title="Stop Camera"
+                      style="color: #ffc107;">X</button>
+                    <button class="btn-toggle-proctor" onclick="toggleProctorWindow()"
+                      id="btn-toggle-proctor">_</button>
+                  </div>
+                </div>
+                <div class="proctor-content">
+                  <video id="stream" style="width: 100%; height: 100%; object-fit: cover;" autoplay></video>
+                </div>
+              </div>
+              <canvas id="capture" width="320" height="320" style="display:none;"></canvas>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+  </section>
+</main>
+<script>
+  var nos;
+  var curr = 0;
+  var data = {};
+  const NOT_MARKED = 0;
+  const MARKED = 1;
+  const BOOKMARKED = 2;
+  const MARKED_BOOKMARKED = 3;
+  const SUBMITTED = 4;
+  const SUBMITTED_BOOKMARKED = 5;
+
+  function mySnackBar() {
+    var x = document.getElementById("snackbar");
+    x.className = "show";
+    setTimeout(function () { x.className = x.className.replace("show", ""); }, 10000);
+  }
+
+  window.onfocus = function (event) {
+    mySnackBar();
+    $.ajax({
+      data: { 'testid': tid },
+      type: "POST",
+      url: "/window_event"
+    });
+  };
+
+  // --- DRAGGABLE WINDOW LOGIC ---
+  dragElement(document.getElementById("proctoring-feed-container"));
+
+  function dragElement(elmnt) {
+    var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    if (document.getElementById("proctor-header")) {
+      document.getElementById("proctor-header").onmousedown = dragMouseDown;
+    } else {
+      elmnt.onmousedown = dragMouseDown;
+    }
+
+    function dragMouseDown(e) {
+      e = e || window.event;
+      e.preventDefault();
+      pos3 = e.clientX;
+      pos4 = e.clientY;
+      document.onmouseup = closeDragElement;
+      document.onmousemove = elementDrag;
+    }
+
+    function elementDrag(e) {
+      e = e || window.event;
+      e.preventDefault();
+      pos1 = pos3 - e.clientX;
+      pos2 = pos4 - e.clientY;
+      pos3 = e.clientX;
+      pos4 = e.clientY;
+      elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+      elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+      elmnt.style.bottom = "auto";
+      elmnt.style.right = "auto";
+    }
+
+    function closeDragElement() {
+      document.onmouseup = null;
+      document.onmousemove = null;
+    }
+  }
+
+  function toggleProctorWindow() {
+    var feed = document.getElementById("proctoring-feed-container");
+    var btn = document.getElementById("btn-toggle-proctor");
+    feed.classList.toggle("collapsed");
+    if (feed.classList.contains("collapsed")) {
+      btn.innerText = "▢";
+    } else {
+      btn.innerText = "_";
+    }
+  }
+
+  function stopProctoring() {
+    if (confirm("Are you sure you want to stop the camera proctoring? This might be flagged as a violation.")) {
+      stopStreaming();
+      document.getElementById('videocheck').style.display = "none";
+      // Clear any pending timeouts
+      clearTimeout(proctorTimeout);
+      console.log("Proctoring stopped by user");
+    }
+  }
+
+  // --- VIDEO RECORDING LOGIC ---
+  var mediaRecorder;
+  var recordedChunks = [];
+
+  function startRecording(stream) {
+    mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp8' });
+    mediaRecorder.ondataavailable = function (event) {
+      if (event.data.size > 0) {
+        recordedChunks.push(event.data);
+      }
+    };
+    mediaRecorder.onstop = uploadVideo;
+    mediaRecorder.start(1000);
+    console.log("Video recording started");
+  }
+
+  function uploadVideo() {
+    return new Promise((resolve, reject) => {
+      var blob = new Blob(recordedChunks, { type: 'video/webm' });
+      var formData = new FormData();
+      formData.append('video', blob, 'exam_record.webm');
+      formData.append('test_id', tid);
+
+      fetch('/upload_exam_video', {
+        method: 'POST',
+        body: formData
+      })
+        .then(r => r.json())
+        .then(data => {
+          console.log("Video uploaded:", data);
+          resolve(data);
+        })
+        .catch(err => {
+          console.error("Video upload failed:", err);
+          resolve(); // Resolve anyway to allow submission
+        });
+    });
+  }
+
+
+  var stream = document.getElementById("stream");
+
+  var capture = document.getElementById("capture");
+  var cameraStream = null;
+
+  var array = null;
+  var values = 0;
+  var length = null;
+
+  function startStreaming() {
+
+    var mediaSupport = 'mediaDevices' in navigator;
+    navigator.getUserMedia = navigator.getUserMedia ||
+      navigator.webkitGetUserMedia ||
+      navigator.mozGetUserMedia;
+
+    if (mediaSupport && null == cameraStream) {
+      navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+        .then(function (mediaStream) {
+          cameraStream = mediaStream;
+          stream.srcObject = mediaStream;
+          stream.play();
+
+          // Start Recording
+          startRecording(mediaStream);
+
+          audioContext = new AudioContext();
+
+          analyser = audioContext.createAnalyser();
+          microphone = audioContext.createMediaStreamSource(mediaStream);
+          javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
+
+          analyser.smoothingTimeConstant = 0.8;
+          analyser.fftSize = 1024;
+
+          microphone.connect(analyser);
+          analyser.connect(javascriptNode);
+          javascriptNode.connect(audioContext.destination);
+
+          javascriptNode.onaudioprocess = function () {
+            array = new Uint8Array(analyser.frequencyBinCount);
+            analyser.getByteFrequencyData(array);
+            values = 0;
+
+            length = array.length;
+            for (var i = 0; i < length; i++) {
+              values += (array[i]);
+            }
+          }
+        })
+        .catch(function (err) {
+          console.log("Unable to access camera: " + err);
+        });
+    }
+    else {
+      alert('Your browser does not support media devices.');
+      return;
+    }
+  }
+
+  function stopStreaming() {
+
+    if (null != cameraStream) {
+      var track = cameraStream.getTracks()[0];
+      track.stop();
+      stream.load();
+      cameraStream = null;
+    }
+  }
+
+  var proctorTimeout = null;
+  function captureSnapshot() {
+
+    if (null != cameraStream) {
+      var ctx = capture.getContext('2d');
+      var img = new Image();
+      ctx.drawImage(stream, 0, 0, capture.width, capture.height);
+      img.src = capture.toDataURL("image/png");
+      img.width = 340;
+      var d1 = capture.toDataURL("image/png");
+      var res = d1.replace("data:image/png;base64,", "");
+
+      var average = values / length;
+
+      console.log(average)
+      console.log(Math.round(average - 40));
+
+      if (average) {
+        $.post("/video_feed", {
+          data: { 'imgData': res, 'voice_db': average, 'testid': tid }
+        },
+          function (data) {
+            console.log(data);
+          });
+      }
+
+    }
+    proctorTimeout = setTimeout(captureSnapshot, 5000);
+  }
+
+  $(document).ready(function () {
+    var url = window.location.href;
+    var list = url.split('/');
+    $('.question').remove();
+    if (url.includes('/give-test/')) {
+      $.ajax({
+        type: "POST",
+        url: "/randomize",
+        dataType: "json",
+        data: { id: list[list.length - 1] },
+        success: function (temp) {
+          nos = temp;
+          display_ques(1);
+          make_array();
+          ques_grid();
+        }
+      });
+    }
+    var time = parseInt($('#time').text()), display = $('#time');
+    startTimer(time, display);
+    sendTime();
+    flag_time = true;
+
+  })
+
+  var unmark_all = function () {
+    $('#options td').each(function (i) {
+      $(this).css("background-color", 'rgba(0, 0, 0, 0)');
+    });
+  }
+
+  var display_ques = function (move) {
+    unmark_all();
+    $.ajax({
+      type: "POST",
+      dataType: 'json',
+      data: { flag: 'get', no: nos[curr] },
+      success: function (temp) {
+        $('#que').text(temp['q']);
+        $('#a').text('𝐀.  ' + temp['a']);
+        $('#b').text('𝐁.  ' + temp['b']);
+        $('#c').text('𝐂.  ' + temp['c']);
+        $('#d').text('𝐃.  ' + temp['d']);
+        $('#queid').text('Question No. ' + (move));
+        $('#mark').text('Marks: ' + temp['marks']);
+        if (data[curr + 1].marked != null)
+          $('#' + data[curr + 1].marked).css("background-color", 'rgba(0, 255, 0, 0.6)');
+      },
+      error: function (error) {
+        console.log("Here is the error res: " + JSON.stringify(error));
+      }
+    });
+  }
+  var flag_time = true;
+  function startTimer(duration, display) {
+    var timer = duration, hours, minutes, seconds;
+
+    var interval = setInterval(function () {
+      console.log(timer);
+      hours = parseInt(timer / 3600, 10);
+      minutes = parseInt((timer % 3600) / 60, 10);
+      seconds = parseInt(timer % 60, 10);
+      hours = hours < 10 ? "0" + hours : hours;
+      minutes = minutes < 10 ? "0" + minutes : minutes;
+      seconds = seconds < 10 ? "0" + seconds : seconds;
+
+      display.text(hours + ":" + minutes + ":" + seconds);
+
+      if (--timer < 0) {
+        finish_test();
+        clearInterval(interval);
+        flag_time = false;
+      }
+    }, 1000);
+  }
+
+  function finish_test() {
+    $('#msg').addClass('alert-info');
+    $('#msg').append("Test submitted successfully");
+
+    // Stop recording
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+      mediaRecorder.onstop = function () {
+        uploadVideo().then(realFinish);
+      };
+      mediaRecorder.stop();
+    } else {
+      realFinish();
+    }
+
+    function realFinish() {
+      $.ajax({
+        type: "POST",
+        dataType: "json",
+        data: { flag: 'completed' },
+        success: function (data) {
+          window.location.replace('/student_index');
+        }
+      });
+    }
+  }
+
+
+
+  function sendTime() {
+    var intervalTime = setInterval(function () {
+      if (flag_time == false) {
+        clearInterval(intervalTime);
+      }
+      var time = $('#time').text();
+      var [hh, mm, ss] = time.split(':');
+      hh = parseInt(hh);
+      mm = parseInt(mm);
+      ss = parseInt(ss);
+      var seconds = hh * 3600 + mm * 60 + ss;
+      $.ajax({
+        type: 'POST',
+        dataType: "json",
+        data: { flag: 'time', time: seconds },
+      });
+      if (flag_time == false) {
+        clearInterval(intervalTime);
+      }
+    }, 5000);
+  }
+
+  $(document).on('click', '#next', function (e) {
+    e.preventDefault();
+    curr += 1;
+    display_ques(curr + 1);
+
+  });
+
+  $(document).on('click', '#prev', function (e) {
+    e.preventDefault();
+    curr -= 1;
+    display_ques(curr + 1);
+
+  });
+
+  $('#submit').on('click', function (e) {
+    e.preventDefault();
+    var marked;
+    if (flag_time == false) {
+      window.location.replace('/student_index');
+      return;
+    }
+    $('#options td').each(function (i) {
+      if ($(this).css("background-color") != 'rgba(0, 0, 0, 0)') {
+        marked = $(this).attr('id');
+        data[curr + 1].marked = marked;
+        data[curr + 1].status = SUBMITTED;
+        $('#question-list').empty();
+        ques_grid();
+      }
+    });
+    $.ajax({
+      type: "POST",
+      dataType: 'json',
+      data: { flag: 'mark', qid: nos[curr], ans: marked },
+      success: function (data) {
+        console.log('Answer posted')
+      },
+      error: function (error) {
+        console.log("Here is the error res: " + JSON.stringify(error));
+      }
+    });
+    $('#next').trigger('click');
+  });
+
+  $('#bookmark').on('click', function (e) {
+    var status = data[curr + 1].status;
+    if (status == MARKED) {
+      data[curr + 1].status = MARKED_BOOKMARKED;
+      $('#question-list').empty();
+      ques_grid();
+    }
+    else if (status == SUBMITTED) {
+      data[curr + 1].status = SUBMITTED_BOOKMARKED;
+      $('#question-list').empty();
+      ques_grid();
+    }
+    else {
+      data[curr + 1].status = BOOKMARKED;
+      $('#question-list').empty();
+      ques_grid();
+    }
+
+  });
+
+
+
+  $('#options').on('click', 'td', function () {
+    if ($(this).css("background-color") != 'rgba(0, 255, 0, 0.6)') {
+      var clicked = $(this).attr('id');
+      var que = $('#queid').attr('id');
+      unmark_all();
+      $(this).css("background-color", 'rgba(0, 255, 0, 0.6)');
+      data[curr + 1].status = MARKED;
+      data[curr + 1].marked = $(this).attr('id');
+    }
+    else {
+      $(this).css("background-color", 'rgba(0, 0, 0, 0)');
+      data[curr + 1].status = NOT_MARKED;
+      data[curr + 1].marked = null;
+    }
+  });
+
+  var submit_overlay_display = true;
+  $('#finish').on("click", function (e) {
+    funSubmitExam();
+
+  });
+
+  var marked = function () {
+    var count = 0;
+    for (var i = 1; i <= nos.length; i++) {
+      if (data[i].status == SUBMITTED || data[i].status == SUBMITTED_BOOKMARKED) {
+        count++;
+        $('#question-list').empty();
+        ques_grid();
+      }
+    }
+    return count;
+  }
+
+  var ques_grid = function () {
+    document.getElementById("overlay").style.display = "block";
+    for (var i = 1; i <= nos.length; i++) {
+      var color = '';
+      var status = data[i].status;
+      if (status == NOT_MARKED) {
+        color = '#1976D2';
+      }
+      else if (status == SUBMITTED) {
+        color = '#42ed62';
+      }
+      else if (status == BOOKMARKED || status == SUBMITTED_BOOKMARKED) {
+        color = '#e6ed7b';
+      }
+      else {
+        color = '#f44336';
+      }
+      j = i < 10 ? "0" + i : i
+      $('#question-list').append('<div class="col-sm-2"><button class="btn btn-primary" style="background-color:' + color + '; color:white;"><div class="question" style="background-color:' + color + '; color:white;">' + j + '</div></div></div>');
+    }
+    $('.question').click(function () {
+      var id = parseInt($(this).text());
+      curr = id - 1;
+      display_ques(curr + 1);
+    });
+  }
+
+  var make_array = function () {
+    for (var i = 0; i < nos.length; i++) {
+      data[i + 1] = { marked: null, status: NOT_MARKED };
+    }
+    var txt = document.createElement('textarea');
+    txt.innerHTML = answers;
+    answers = txt.value;
+    answers = JSON.parse(answers);
+    for (var key in answers) {
+      data[parseInt(key) + 1].marked = answers[key]
+      data[parseInt(key) + 1].status = SUBMITTED;
+    }
+  }
+
+  function funSubmitExam() {
+    var count = marked();
+    var remaining = nos.length - count;
+    Swal.fire({
+      title: '<strong>FINISH EXAM</strong>',
+      icon: 'warning',
+      html:
+        '<table><tr><td>TOTAL QUESTIONS:</td><td>' + nos.length + '</td></tr><tr><td>ATTEMPTED:</td><td>' + count + '</td></tr><tr><td>REMAINING:</td><td>' + remaining + '</td></tr></table>',
+      showCloseButton: false,
+      showCancelButton: true,
+      focusConfirm: true,
+      confirmButtonText:
+        'OK, FINISH MY EXAM!',
+      confirmButtonAriaLabel: 'We are abide by rules!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        finish_test();
+      }
+    })
+  }
+
+  window.addEventListener('selectstart', function (e) { e.preventDefault(); });
+  $(document).ready(function () {
+    $('body').bind('select cut copy paste', function (e) {
+      e.preventDefault();
+    });
+
+    $("body").on("contextmenu", function (e) {
+      return false;
+    });
+  });
+
+  document.addEventListener('keyup', (e) => {
+    if (e.key == 'PrintScreen') {
+      navigator.clipboard.writeText('');
+      alert('Screenshots disabled!');
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.key == 'p') {
+      alert('This section is not allowed to print or export to PDF');
+      e.cancelBubble = true;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    }
+  });
+</script>
+<script>
+  var cal = "{{calc}}";
+  console.log(cal)
+  if (cal == "1") {
+    document.getElementById('calccheck').style.display = "block"
+  }
+  else {
+    document.getElementById('calccheck').style.display = "none"
+  }
+  var vid = "{{proctortype}}";
+  console.log(vid)
+  if (vid == "0") {
+    document.getElementById('videocheck').style.display = "block"
+    startStreaming();
+    captureSnapshot();
+  }
+  else {
+    document.getElementById('livecheck').style.display = "block"
+  }
+</script>
+<footer id="sticky-footer" class="py-4">
+  <div class="d-flex text-center justify-content-center align-items-center" role="contentinfo">
+    <p class="font-weight-bold font-medium mb-0">Copyright © MyProctor.ai
+      <span class="current-year">
+        <script>document.write(new Date().getFullYear())</script>
+      </span>. All rights reserved.
+    </p>
+  </div><br>
+  <div class="d-flex text-center justify-content-center align-items-center" role="contentinfo">
+    <p class="font-weight-bold font-small mb-0"><span>Made with &#128151 By NARENDER KESWANI</span></p>
+  </div>
+</footer>
+{% endblock %}

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MyProctor.ai - Professor Dashboard</title>
+  <!-- FontAwesome for Icons (kept as it is standard and usually cached/lightweight, but local fallback can be added if needed) -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.7/css/all.css">
+
+  <style>
+    /* --- RESET & BASIC STYLES --- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f9;
+      /* Light grey background */
+      color: #333;
+      display: flex;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    /* --- SIDEBAR STYLES --- */
+    .sidebar {
+      width: 250px;
+      background-color: #343a40;
+      /* Dark sidebar */
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      transition: transform 0.3s ease-in-out;
+      z-index: 1000;
+    }
+
+    .sidebar.collapsed {
+      transform: translateX(-250px);
+    }
+
+    .sidebar-header {
+      padding: 20px;
+      text-align: center;
+      border-bottom: 1px solid #4b545c;
+      background-color: #212529;
+      /* Darker header */
+    }
+
+    .sidebar-header h3 {
+      font-size: 1.2rem;
+      margin: 0;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .user-info {
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #4b545c;
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 10px;
+      background-color: #6c757d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: white;
+    }
+
+    .user-details h6 {
+      font-size: 0.9rem;
+      margin: 0;
+    }
+
+    .user-details span {
+      font-size: 0.75rem;
+      color: #adb5bd;
+    }
+
+    .sidebar-menu {
+      flex: 1;
+      padding: 10px 0;
+      overflow-y: auto;
+    }
+
+    .sidebar-menu li {
+      position: relative;
+    }
+
+    .sidebar-menu a {
+      display: flex;
+      align-items: center;
+      padding: 12px 20px;
+      color: #c2c7d0;
+      transition: all 0.2s;
+      font-size: 0.95rem;
+    }
+
+    .sidebar-menu a:hover,
+    .sidebar-menu a.active {
+      background-color: #494e53;
+      color: #fff;
+      border-left: 4px solid #007bff;
+    }
+
+    .sidebar-menu i {
+      width: 25px;
+      text-align: center;
+      margin-right: 10px;
+    }
+
+    /* Submenu */
+    .has-submenu>a {
+      justify-content: space-between;
+    }
+
+    .has-submenu .dropdown-icon {
+      transition: transform 0.3s;
+    }
+
+    .has-submenu.open .dropdown-icon {
+      transform: rotate(90deg);
+    }
+
+    .submenu {
+      display: none;
+      background-color: #2c3034;
+      padding-left: 0;
+    }
+
+    .submenu li a {
+      padding-left: 50px;
+      font-size: 0.9rem;
+    }
+
+    .has-submenu.open .submenu {
+      display: block;
+    }
+
+    /* --- MAIN CONTENT STYLES --- */
+    .main-content {
+      margin-left: 250px;
+      /* Space for sidebar */
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      width: calc(100% - 250px);
+      transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
+    }
+
+    .main-content.expanded {
+      margin-left: 0;
+      width: 100%;
+    }
+
+    /* Navbar */
+    .top-navbar {
+      background-color: #fff;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      height: 60px;
+    }
+
+    .toggle-sidebar-btn {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: #343a40;
+      padding: 5px;
+    }
+
+    .navbar-right {
+      display: flex;
+      align-items: center;
+    }
+
+    /* Content Area inside Main */
+    .content-wrapper {
+      padding: 20px;
+      flex: 1;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 5px;
+      box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);
+      margin-bottom: 20px;
+      padding: 20px;
+    }
+
+    /* Footer */
+    .footer {
+      background-color: #fff;
+      padding: 15px;
+      text-align: center;
+      border-top: 1px solid #dee2e6;
+      font-size: 0.85rem;
+      color: #6c757d;
+    }
+
+    /* --- ALERT STYLES (for flash messages) --- */
+    .alert {
+      position: relative;
+      padding: 0.75rem 1.25rem;
+      margin-bottom: 1rem;
+      border: 1px solid transparent;
+      border-radius: 0.25rem;
+    }
+
+    .alert-primary {
+      color: #004085;
+      background-color: #cce5ff;
+      border-color: #b8daff;
+    }
+
+    .alert-secondary {
+      color: #383d41;
+      background-color: #e2e3e5;
+      border-color: #d6d8db;
+    }
+
+    .alert-success {
+      color: #155724;
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+    }
+
+    .alert-danger {
+      color: #721c24;
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+    }
+
+    .alert-warning {
+      color: #856404;
+      background-color: #fff3cd;
+      border-color: #ffeeba;
+    }
+
+    .alert-info {
+      color: #0c5460;
+      background-color: #d1ecf1;
+      border-color: #bee5eb;
+    }
+
+    /* Utility for messages structure */
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      margin-right: -15px;
+      margin-left: -15px;
+    }
+
+    .justify-content-center {
+      justify-content: center;
+    }
+
+    .col-12 {
+      flex: 0 0 100%;
+      max-width: 100%;
+      padding-left: 15px;
+      padding-right: 15px;
+    }
+
+    @media (min-width: 768px) {
+      .col-md-10 {
+        flex: 0 0 83.333333%;
+        max-width: 83.333333%;
+      }
+    }
+
+    /* --- RESPONSIVE STYLES --- */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-250px);
+        /* Hidden by default on mobile */
+      }
+
+      .sidebar.active {
+        transform: translateX(0);
+        /* Show on mobile when active */
+      }
+
+      .main-content {
+        margin-left: 0;
+        width: 100%;
+      }
+
+      /* Overlay when sidebar is open on mobile */
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+      }
+
+      .sidebar.active+.sidebar-overlay {
+        display: block;
+      }
+    }
+
+    /* Utility classes */
+    .text-center {
+      text-align: center;
+    }
+
+    .mt-3 {
+      margin-top: 1rem;
+    }
+
+    .mb-3 {
+      margin-bottom: 1rem;
+    }
+
+    .btn {
+      display: inline-block;
+      font-weight: 400;
+      text-align: center;
+      vertical-align: middle;
+      user-select: none;
+      padding: 0.375rem 0.75rem;
+      font-size: 1rem;
+      line-height: 1.5;
+      border-radius: 0.25rem;
+      transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+
+    .btn-primary {
+      color: #fff;
+      background-color: #007bff;
+      border-color: #007bff;
+    }
+
+    .btn-primary:hover {
+      background-color: #0069d9;
+      border-color: #0062cc;
+    }
+
+    .btn-danger {
+      color: #fff;
+      background-color: #dc3545;
+      border-color: #dc3545;
+    }
+
+    .btn-danger:hover {
+      background-color: #c82333;
+      border-color: #bd2130;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Sidebar -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h3>MyProctor.ai</h3>
+    </div>
+
+    <div class="user-info">
+      <div class="user-avatar">
+        <i class="fas fa-user"></i>
+      </div>
+      <div class="user-details">
+        <h6>{{ session.name }}</h6>
+        <span>Professor</span>
+      </div>
+    </div>
+
+    <ul class="sidebar-menu">
+      <!-- Create Exam Dropdown -->
+      <li>
+        <a href="/create_exam">
+          <i class="fas fa-plus"></i> Create Exam
+        </a>
+      </li>
+
+      <li>
+        <a href="/generate_test">
+          <i class="fas fa-magic"></i> Generate Questions
+        </a>
+      </li>
+
+      <li>
+        <a href="/viewquestions">
+          <i class="fas fa-eye"></i> View Questions
+        </a>
+      </li>
+
+      <li>
+        <a href="/updatetidlist">
+          <i class="fas fa-edit"></i> Update Questions
+        </a>
+      </li>
+
+      <li>
+        <a href="/deltidlist">
+          <i class="fas fa-trash-alt"></i> Delete Questions
+        </a>
+      </li>
+
+      <li>
+        <a href="/{{session.email}}/disptests">
+          <i class="fas fa-history"></i> Exam History
+        </a>
+      </li>
+
+      <li>
+        <a href="/livemonitoringtid">
+          <i class="fas fa-video"></i> Live Monitoring
+        </a>
+      </li>
+
+      <li>
+        <a href="/viewstudentslogs">
+          <i class="fas fa-binoculars"></i> Student Logs
+        </a>
+      </li>
+
+      <li>
+        <a href="/insertmarkstid">
+          <i class="fas fa-spell-check"></i> Insert Marks
+        </a>
+      </li>
+
+      <li>
+        <a href="/publish-results-testid">
+          <i class="fas fa-clipboard-check"></i> Publish Results
+        </a>
+      </li>
+
+      <li>
+        <a href="/{{session.email}}/tests-created">
+          <i class="fas fa-poll"></i> Results
+        </a>
+      </li>
+
+      <hr style="border-color: #4b545c; margin: 10px 0;">
+
+      <li>
+        <a href="/report_professor">
+          <i class="fas fa-bug"></i> Report Problems
+        </a>
+      </li>
+
+      <li>
+        <a href="/payment">
+          <i class="fas fa-money-bill-alt"></i> Payment
+        </a>
+      </li>
+
+      <li>
+        <a href="/changepassword_professor">
+          <i class="fas fa-key"></i> Change Password
+        </a>
+      </li>
+
+      <li>
+        <a href="#" onclick="confirmLogout()">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- Main Content -->
+  <main class="main-content" id="mainContent">
+    <!-- Top Navbar -->
+    <header class="top-navbar">
+      <button class="toggle-sidebar-btn" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="navbar-right">
+        <!-- Add any top right items here if needed, e.g. notifications -->
+      </div>
+    </header>
+
+    <!-- Dynamic Content Body -->
+    <div class="content-wrapper">
+      <!-- Messages Include -->
+      {% include 'includes/_messages.html' %}
+
+      {% block body %}
+      <!-- Default Content if no block defined -->
+      <div class="card">
+        <h2>Welcome, {{ session.name }}!</h2>
+        <p>Welcome to your professor dashboard. Use the sidebar to navigate through the examination system features.</p>
+      </div>
+      {% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>&copy; <span id="year"></span> MyProctor.ai. All rights reserved.</p>
+      <p>Made with &hearts; by NARENDER KESWANI</p>
+    </footer>
+  </main>
+
+  <!-- Scripts -->
+  <script>
+    // Set current year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Toggle Sidebar
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const mainContent = document.getElementById('mainContent');
+
+      if (window.innerWidth <= 768) {
+        // Mobile: Toggle .active
+        sidebar.classList.toggle('active');
+      } else {
+        // Desktop: Toggle .collapsed on sidebar and .expanded on main
+        sidebar.classList.toggle('collapsed');
+        mainContent.classList.toggle('expanded');
+      }
+    }
+
+    // Toggle Submenus
+    function toggleSubmenu(element) {
+      element.classList.toggle('open');
+      // Prevent event bubbling if clicking link
+      // Note: onclick is on LI, so bubbling from A is fine, but we stop specific link clicks
+    }
+
+    // Logout Confirmation
+    function confirmLogout() {
+      if (confirm("Are you sure you want to logout?")) {
+        fetch('/logout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }).then(response => {
+          if (response.ok) {
+            window.location.href = "/";
+          } else {
+            // Fallback
+            window.location.href = "/";
+          }
+        }).catch(error => {
+          window.location.href = "/";
+        });
+      }
+    }
+
+    // Ensure submenu clicks don't close sidebar immediately if that was an issue
+    document.querySelectorAll('.submenu a').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+    });
+  </script>
+</body>
+
+</html>

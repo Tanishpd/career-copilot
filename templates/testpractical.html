@@ -1,0 +1,1164 @@
+{% extends 'exam_layout.html' %}
+{% block body %}
+<style>
+  #editor-container {
+    height: 60vh;
+    border: 1px solid #ccc;
+  }
+
+  .question-nav-btn {
+    width: 40px;
+    height: 40px;
+    margin: 5px;
+    border-radius: 50%;
+  }
+
+  .test-case-result {
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+  }
+
+  .passed {
+    background-color: #d4edda;
+    color: #155724;
+  }
+
+  .failed {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+
+  .problem-description img {
+    max-width: 100%;
+  }
+
+  /* AI Interviewer Overlay */
+  /* AI Interviewer Sidebar */
+  #ai-sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 350px;
+    height: 100vh;
+    background: #f8f9fa;
+    border-left: 1px solid #ddd;
+    z-index: 1050;
+    display: flex;
+    flex-direction: column;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+  }
+
+  #ai-sidebar.collapsed {
+    transform: translateX(350px);
+  }
+
+  .ai-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: #007bff;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 50px;
+    box-shadow: 0 0 20px rgba(0, 123, 255, 0.5);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.7);
+    }
+
+    70% {
+      transform: scale(1.05);
+      box-shadow: 0 0 0 10px rgba(0, 123, 255, 0);
+    }
+
+    100% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(0, 123, 255, 0);
+    }
+  }
+
+  .chat-header {
+    padding: 15px;
+    background: #007bff;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .chat-header h5 {
+    margin: 0;
+    font-size: 1rem;
+  }
+
+  .chat-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .ai-message {
+    align-self: flex-start;
+    background: #e9ecef;
+    padding: 10px;
+    border-radius: 10px 10px 10px 0;
+    max-width: 85%;
+    font-size: 0.9rem;
+  }
+
+  .user-message {
+    align-self: flex-end;
+    background: #007bff;
+    color: white;
+    padding: 10px;
+    border-radius: 10px 10px 0 10px;
+    max-width: 85%;
+    font-size: 0.9rem;
+  }
+
+  .chat-footer {
+    padding: 15px;
+    background: #f8f9fa;
+    border-top: 1px solid #ddd;
+  }
+
+  .toggle-chat-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 2000;
+  }
+
+  .message.ai {
+    background: #004085;
+    text-align: left;
+  }
+
+  .message.user {
+    background: #155724;
+    text-align: right;
+  }
+
+  .controls {
+    display: flex;
+    gap: 15px;
+  }
+
+  .visualizer {
+    height: 30px;
+    display: flex;
+    gap: 3px;
+    margin-top: 10px;
+  }
+
+  .bar {
+    width: 5px;
+    background: #0f0;
+    height: 5px;
+    animation: sound 0s infinite;
+  }
+
+  @keyframes sound {
+    0% {
+      height: 5px;
+    }
+
+    50% {
+      height: 25px;
+    }
+
+    100% {
+      height: 5px;
+    }
+  }
+
+  /* Floating Proctoring Window */
+  #proctoring-feed {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 200px;
+    border: 2px solid #dc3545;
+    z-index: 1060;
+    background: black;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: move;
+  }
+
+  .proctor-header {
+    padding: 5px 10px;
+    background: #dc3545;
+    color: white;
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: move;
+  }
+
+  .proctor-content {
+    height: 150px;
+    transition: height 0.3s ease;
+  }
+
+  #proctoring-feed.collapsed .proctor-content {
+    height: 0;
+  }
+
+  .btn-toggle-proctor {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 0 5px;
+  }
+</style>
+
+
+<!-- Load Monaco Editor -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.30.1/min/vs/loader.min.js"></script>
+
+<script>
+  // Global Test ID for JS Access
+  var testId = "{{ test_id }}";
+</script>
+
+
+<button class="btn btn-primary toggle-chat-btn" onclick="toggleChat()">💬 AI Assistant</button>
+
+<div id="ai-sidebar">
+  <div class="chat-header">
+    <div style="display:flex; align-items:center; gap:10px;">
+      <div
+        style="width:30px; height:30px; background:white; border-radius:50%; display:flex; justify-content:center; align-items:center;">
+        🤖</div>
+      <h5>AI Interviewer</h5>
+    </div>
+    <button class="btn btn-sm btn-outline-light" onclick="toggleChat()">✕</button>
+  </div>
+
+  <div class="chat-body" id="ai-chat-box">
+    <div class="ai-message">Hello! I am your AI Interviewer. Please introduce yourself to begin.</div>
+  </div>
+
+  <div class="chat-footer">
+    <div class="input-group">
+      <input type="text" id="candidate-input" class="form-control" placeholder="Type..."
+        onkeypress="handleInputKey(event)">
+      <button class="btn btn-primary" onclick="sendTextResponse()">Send</button>
+    </div>
+    <!-- 
+    <div class="d-grid gap-2 mt-2">
+      <button id="btn-submit-code" class="btn btn-success btn-sm" onclick="submitCodeForReview()">✅ Submit Code for Review</button>
+    </div>
+    -->
+    <p class="text-muted small mt-1 text-center" id="status-text">Ready</p>
+  </div>
+</div>
+
+
+<style>
+  /* Sidebar handling */
+  body {
+    transition: margin-right 0.3s ease-in-out;
+  }
+
+  body.sidebar-open {
+    margin-right: 350px;
+  }
+</style>
+
+<div class="container-fluid mt-4" id="main-test-container">
+  <div class="row">
+    <!-- Left Panel: Problem & Navigation -->
+    <div class="col-md-4">
+      <div class="card shadow-sm mb-3">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Questions</h5>
+          <div>
+            <button class="btn btn-sm btn-light" onclick="prevQuestion()">&lt; Prev</button>
+            <button class="btn btn-sm btn-light" onclick="nextQuestion()">Next &gt;</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div id="question-nav" class="d-flex flex-wrap justify-content-center">
+            <!-- Navigation Buttons generated by JS -->
+          </div>
+        </div>
+      </div>
+
+      <div class="card shadow-sm" style="height: 70vh; overflow-y: auto;">
+        <div class="card-header bg-light">
+          <h5 class="mb-0">Problem Description</h5>
+        </div>
+        <div class="card-body">
+          <div id="problem-title" class="h4 mb-3"></div>
+          <div id="problem-desc" class="problem-description"></div>
+          <hr>
+          <div class="mt-3">
+            <strong>Marks: </strong> <span id="problem-marks"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Panel: Code Editor & Output -->
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+          <div class="d-flex gap-2">
+            <select id="language-select" class="form-select form-select-sm" style="width: 120px;"
+              onchange="onLanguageChange()">
+              <option value="python">Python</option>
+              <option value="java">Java</option>
+            </select>
+            <div id="timer" class="badge bg-warning text-dark fs-6 d-flex align-items-center">{{duration}}</div>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-secondary btn-sm" onclick="runCode()">▶ Run</button>
+            <button class="btn btn-success btn-sm" onclick="saveCurrentAnswer()">💾 Submit Answer</button>
+            <button class="btn btn-danger btn-sm" onclick="submitExam()">🏁 Finish Exam</button>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div id="editor-container"></div>
+          <div id="aptitude-section" class="p-4" style="display:none; height: 60vh; overflow-y: auto;">
+            <!-- Aptitude -->
+          </div>
+        </div>
+        <div class="card-footer bg-dark text-white" style="height: 25vh; overflow-y: auto;">
+          <div class="d-flex justify-content-between mb-2">
+            <h6 class="m-0">Output / Test Cases</h6>
+            <button class="btn btn-xs btn-outline-light" onclick="toggleConsole()">_</button>
+          </div>
+          <div id="output-console" class="font-monospace small">
+            Running status will appear here...
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LIVE PROCTORING FEED (Server-Side) -->
+<div id="proctoring-feed">
+  <div class="proctor-header" id="proctor-header">
+    <span>Proctoring Feed</span>
+    <button class="btn-toggle-proctor" onclick="toggleProctorWindow()" id="btn-toggle-proctor">_</button>
+  </div>
+  <div class="proctor-content">
+    <img src="{{ url_for('video_feed') }}" style="width: 100%; height: 100%; object-fit: cover;" alt="Live Proctoring">
+  </div>
+</div>
+
+
+<!-- Hidden Elements for Webcam Capture -->
+<video id="stream" width="320" height="240" style="display:none;" autoplay></video>
+<canvas id="capture" width="320" height="240" style="display:none;"></canvas>
+
+<!-- Hidden inputs for final submission if needed, or we submit via AJAX -->
+<form id="final-submit-form" method="POST" action="">
+  <input type="hidden" name="test_id" value="{{ test_id }}">
+  <!-- We will populate this before submitting -->
+  <input type="hidden" name="answers" id="answers-input">
+</form>
+
+<script>
+  // --- DRAGGABLE WINDOW LOGIC ---
+  dragElement(document.getElementById("proctoring-feed"));
+
+  function dragElement(elmnt) {
+    var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    if (document.getElementById("proctor-header")) {
+      document.getElementById("proctor-header").onmousedown = dragMouseDown;
+    } else {
+      elmnt.onmousedown = dragMouseDown;
+    }
+
+    function dragMouseDown(e) {
+      e = e || window.event;
+      e.preventDefault();
+      pos3 = e.clientX;
+      pos4 = e.clientY;
+      document.onmouseup = closeDragElement;
+      document.onmousemove = elementDrag;
+    }
+
+    function elementDrag(e) {
+      e = e || window.event;
+      e.preventDefault();
+      pos1 = pos3 - e.clientX;
+      pos2 = pos4 - e.clientY;
+      pos3 = e.clientX;
+      pos4 = e.clientY;
+      elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+      elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+      elmnt.style.bottom = "auto";
+      elmnt.style.right = "auto";
+    }
+
+    function closeDragElement() {
+      document.onmouseup = null;
+      document.onmousemove = null;
+    }
+  }
+
+  function toggleProctorWindow() {
+    var feed = document.getElementById("proctoring-feed");
+    var btn = document.getElementById("btn-toggle-proctor");
+    feed.classList.toggle("collapsed");
+    if (feed.classList.contains("collapsed")) {
+      btn.innerText = "▢";
+    } else {
+      btn.innerText = "_";
+    }
+  }
+
+  // --- VIDEO RECORDING LOGIC ---
+  var mediaRecorder;
+  var recordedChunks = [];
+
+  function startRecording(stream) {
+    mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp8' });
+    mediaRecorder.ondataavailable = function (event) {
+      if (event.data.size > 0) {
+        recordedChunks.push(event.data);
+      }
+    };
+    mediaRecorder.onstop = uploadVideo;
+    mediaRecorder.start(1000); // 1s slice
+    console.log("Video recording started");
+  }
+
+  function uploadVideo() {
+    return new Promise((resolve, reject) => {
+      var blob = new Blob(recordedChunks, { type: 'video/webm' });
+      var formData = new FormData();
+      formData.append('video', blob, 'exam_record.webm');
+      formData.append('test_id', tid);
+
+      fetch('/upload_exam_video', {
+        method: 'POST',
+        body: formData
+      })
+        .then(r => r.json())
+        .then(data => {
+          console.log("Video uploaded:", data);
+          resolve(data);
+        })
+        .catch(err => {
+          console.error("Video upload failed:", err);
+          resolve(); // Resolve anyway to allow submission
+        });
+    });
+  }
+
+
+  // --- PROCTORING & TIMER LOGIC ---
+
+  var tid = "{{test_id}}";
+  var vid = "{{proctortypep}}"; // "0" = AI Proctoring, "1" = Live/Other?
+  var cameraStream = null;
+  var videoElement = document.getElementById("stream");
+  var canvasElement = document.getElementById("capture");
+
+  // Audio context for noise detection (from original apppractical.js)
+  var audioContext, analyser, microphone, javascriptNode;
+  var audioValues = 0;
+  var audioLength = 0;
+
+  function startProctoring() {
+    if (vid == "0") {
+      startStreaming();
+      captureSnapshot(); // Loop
+    } else {
+      // Live proctoring (TokBox) handled by iframe script
+    }
+
+    // Timer
+    var durationSeconds = parseInt("{{duration}}");
+    startTimer(durationSeconds);
+
+    // Window Focus/Blur
+    window.onblur = function () {
+      // alert("Don't change window!"); // Maybe too intrusive?
+      // Log event to server
+      $.ajax({ data: { 'testid': tid }, type: "POST", url: "/window_event" });
+    };
+  }
+
+  function startStreaming() {
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+        .then(function (stream) {
+          cameraStream = stream;
+          videoElement.srcObject = stream;
+          videoElement.play();
+
+          // Start Recording
+          startRecording(stream);
+
+          // Audio Setup
+
+          audioContext = new AudioContext();
+          analyser = audioContext.createAnalyser();
+          microphone = audioContext.createMediaStreamSource(stream);
+          javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
+          analyser.smoothingTimeConstant = 0.8;
+          analyser.fftSize = 1024;
+          microphone.connect(analyser);
+          analyser.connect(javascriptNode);
+          javascriptNode.connect(audioContext.destination);
+          javascriptNode.onaudioprocess = function () {
+            var array = new Uint8Array(analyser.frequencyBinCount);
+            analyser.getByteFrequencyData(array);
+            audioValues = 0;
+            audioLength = array.length;
+            for (var i = 0; i < audioLength; i++) {
+              audioValues += array[i];
+            }
+          };
+        })
+        .catch(function (err) { console.log("Camera Error: " + err); });
+    }
+  }
+
+  function captureSnapshot() {
+    if (cameraStream) {
+      var ctx = canvasElement.getContext('2d');
+      ctx.drawImage(videoElement, 0, 0, 320, 240); // Adjusted height for 4:3 aspect ratio
+      var dataURL = canvasElement.toDataURL("image/png");
+      var res = dataURL.replace("data:image/png;base64,", "");
+
+      var avgAudio = audioLength ? (audioValues / audioLength) : 0;
+
+      // Send to server
+      $.post("/video_feed", {
+        data: { 'imgData': res, 'voice_db': avgAudio, 'testid': tid }
+      }, function (resp) {
+        // resp is now JSON { status, annotated_feed }
+        if (resp.status === 'success' && resp.annotated_feed) {
+          // Update the visible image with the annotated frame from server
+          var img = document.querySelector("#proctoring-feed img");
+          if (img) {
+            img.src = "data:image/jpeg;base64," + resp.annotated_feed;
+          }
+        }
+      });
+    }
+    setTimeout(captureSnapshot, 1000); // Let's stick to 1000ms (1s) to balance load.
+  }
+
+  function startTimer(duration) {
+    var timer = duration, minutes, seconds, hours;
+    var display = document.getElementById("timer");
+    var interval = setInterval(function () {
+      hours = parseInt(timer / 3600, 10);
+      minutes = parseInt((timer % 3600) / 60, 10);
+      seconds = parseInt(timer % 60, 10);
+
+      hours = hours < 10 ? "0" + hours : hours;
+      minutes = minutes < 10 ? "0" + minutes : minutes;
+      seconds = seconds < 10 ? "0" + seconds : seconds;
+
+      display.textContent = hours + ":" + minutes + ":" + seconds;
+
+      if (--timer < 0) {
+        clearInterval(interval);
+        submitExam();
+      }
+
+      // Update time on server every 5s? (Optional)
+    }, 1000);
+  }
+
+  // START EVERYTHING
+  $(document).ready(function () {
+    startProctoring();
+  });
+
+  // --- MONACO & EXAM LOGIC ---
+  // Data from Flask
+  var testId = "{{ test_id }}";
+  var questions = {{ callresults | tojson }};
+  var currentQIndex = 0;
+  var userCodes = {}; // Store user code for each question id
+  var editor;
+  var currentBoilerplates = {}; // { python: "...", java: "..." }
+
+  // Initialize Monaco
+  require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.30.1/min/vs' } });
+
+  require(['vs/editor/editor.main'], function () {
+    editor = monaco.editor.create(document.getElementById('editor-container'), {
+      value: "# Write your Python code here\nprint('Hello World')",
+      language: 'python',
+      theme: 'vs-dark',
+      automaticLayout: true
+    });
+
+    if (!questions || questions.length === 0) {
+      alert("No questions found for this exam. Please contact your professor.");
+      return;
+    }
+
+    loadQuestion(0);
+  });
+
+  // userCodes structure: { qid: { python: "code", java: "code" } }
+
+  function loadQuestion(index) {
+    var oldQ = questions[currentQIndex];
+    var currentLang = document.getElementById('language-select').value;
+
+    // Save current code before switching
+    if (oldQ) {
+      if (!userCodes[oldQ.qid]) userCodes[oldQ.qid] = {};
+      userCodes[oldQ.qid][currentLang] = editor.getValue();
+    }
+
+    currentQIndex = index;
+    var q = questions[index];
+
+    // Update UI
+    document.getElementById('problem-title').innerText = "Q" + q.qid;
+    document.getElementById('problem-desc').innerHTML = q.q;
+    document.getElementById('problem-marks').innerText = q.marks;
+
+    // Parse Boilerplates
+    extractBoilerplates(q.q);
+
+    var editorContainer = document.getElementById('editor-container');
+    var aptitudeSection = document.getElementById('aptitude-section');
+    var runBtn = document.querySelector('button[onclick="runCode()"]');
+    var langSelect = document.getElementById('language-select');
+    var outputPanel = document.getElementById('output-console').parentNode; // card-footer
+
+    if (q.type === 'aptitude') {
+      // Hide Coding UI
+      editorContainer.style.display = 'none';
+      runBtn.style.display = 'none';
+      langSelect.style.display = 'none';
+      outputPanel.style.display = 'none';
+
+      // Show Aptitude UI
+      aptitudeSection.style.display = 'block';
+
+      // Render Options
+      var form = document.getElementById('aptitude-options');
+      form.innerHTML = '';
+      var options = ['a', 'b', 'c', 'd'];
+
+      options.forEach(opt => {
+        if (q[opt]) { // check if option exists
+          var wrapper = document.createElement('div');
+          wrapper.className = 'form-check mb-2';
+
+          var input = document.createElement('input');
+          input.className = 'form-check-input';
+          input.type = 'radio';
+          input.name = 'aptitude-opt';
+          input.id = 'opt-' + opt;
+          input.value = opt;
+          input.onchange = function () {
+            if (!userCodes[q.qid]) userCodes[q.qid] = {};
+            userCodes[q.qid]['answer'] = this.value; // Corrected 'this.value'
+          };
+
+          // Restore Selection
+          if (userCodes[q.qid] && userCodes[q.qid]['answer'] === opt) {
+            input.checked = true;
+          }
+
+          var label = document.createElement('label');
+          label.className = 'form-check-label';
+          label.htmlFor = 'opt-' + opt;
+          label.innerText = q[opt]; // Option text
+
+          wrapper.appendChild(input);
+          wrapper.appendChild(label);
+          form.appendChild(wrapper);
+        }
+      });
+
+    } else {
+      // Show Coding UI
+      editorContainer.style.display = 'block';
+      runBtn.style.display = 'inline-block';
+      langSelect.style.display = 'inline-block';
+      outputPanel.style.display = 'block';
+
+      // Hide Aptitude UI
+      aptitudeSection.style.display = 'none';
+
+      // Update Editor Content for current language
+      updateEditorForQuestion(q, currentLang);
+    }
+
+    lastLanguage = currentLang; // Sync state
+
+    renderNav();
+  }
+
+  function changeLanguage() {
+    var newLang = document.getElementById('language-select').value;
+    var q = questions[currentQIndex];
+
+    // We need to know the *previous* language to save it?
+    // Actually, `changeLanguage` is called *after* the select value changes.
+    // So we can't easily save the *previous* language's code here unless we track `previousLang`.
+    // OR, we assume the user just wants to see the new language template/code.
+    // BUT, if they wrote code in Python, switched to Java, then back to Python, they expect their Python code.
+
+    // To fix this, we need to track `lastLanguage` in a variable.
+    // Let's rely on a global `currentLang` which we update.
+
+    // However, since the DOM element already changed, we might have lost the "previous" state if we don't track it.
+    // Let's implement a `handleLanguageChange` wrapper that runs `onfocus` to save old? No.
+    // Better: Update `currentLang` variable whenever we change it.
+
+    // Note: The `changeLanguage` function in the original code wasn't bound to `onchange` in the HTML snippet I saw earlier (lines 75-81). 
+    // I need to check if `onchange="changeLanguage()"` is actually there. 
+    // If not, I'll add it.
+
+    // For now, let's assume valid logic:
+    // 1. Get code from editor -> Save to userCodes[qid][lastLanguage]
+    // 2. Load userCodes[qid][newLang] -> Ensure editor model language updates.
+
+    // We need `lastLanguage` global.
+  }
+
+  var lastLanguage = 'python'; // Default
+
+  function onLanguageChange() {
+    var newLang = document.getElementById('language-select').value;
+    var q = questions[currentQIndex];
+
+    // Save code for OLD language
+    if (!userCodes[q.qid]) userCodes[q.qid] = {};
+    userCodes[q.qid][lastLanguage] = editor.getValue();
+
+    // Update Editor Model Language
+    var model = editor.getModel();
+    monaco.editor.setModelLanguage(model, newLang === 'c' || newLang === 'cpp' ? 'cpp' : newLang);
+
+    // Load code for NEW language
+    lastLanguage = newLang;
+    updateEditorForQuestion(q, newLang);
+  }
+
+  function updateEditorForQuestion(q, lang) {
+    // 1. Check if user has saved code for this specific lang
+    if (userCodes[q.qid] && userCodes[q.qid][lang]) {
+      editor.setValue(userCodes[q.qid][lang]);
+    } else {
+      // 2. Load Boilerplate
+      setEditorContent(lang);
+    }
+  }
+
+  // Bind onLanguageChange to select element (we'll do this in replacement or ensure HTML has it)
+
+  function extractBoilerplates(htmlContent) {
+    var tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlContent;
+
+    // Try to find the hidden div (updated to use class first, then fallback to ID)
+    var div = tempDiv.querySelector('.boilerplates_data');
+    if (!div) div = tempDiv.querySelector('#boilerplates_data');
+
+    if (div) {
+      try {
+        currentBoilerplates = JSON.parse(div.innerText);
+      } catch (e) {
+        console.error("Error parsing boilerplates", e);
+      }
+    } else {
+      // Fallback: Check if python boilerplate is in pre tag? 
+      // Or if we have simple string
+    }
+  }
+
+  function setEditorContent(lang) {
+    if (currentBoilerplates[lang]) {
+      editor.setValue(currentBoilerplates[lang]);
+    } else {
+      // Default fallbacks if no boilerplate in DB
+      if (lang === 'python') editor.setValue("# Write your Python code here\nprint('Hello World')");
+      else if (lang === 'java') editor.setValue("public class Main {\n    public static void main(String[] args) {\n        System.out.println(\"Hello World\");\n    }\n}");
+      else if (lang === 'c') editor.setValue("#include <stdio.h>\n\nint main() {\n    printf(\"Hello World\");\n    return 0;\n}");
+      else if (lang === 'cpp') editor.setValue("#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << \"Hello World\";\n    return 0;\n}");
+    }
+  }
+
+  function devResetExam() {
+    var tid = "{{test_id}}";
+    fetch('/dev_reset', { method: 'POST', body: new URLSearchParams({ test_id: tid }) })
+      .then(r => r.json()).then(d => alert(d.message));
+  }
+
+  function renderNav() {
+    var nav = document.getElementById('question-nav');
+    nav.innerHTML = '';
+    questions.forEach((q, idx) => {
+      var btn = document.createElement('button');
+      btn.className = 'btn question-nav-btn ' + (idx === currentQIndex ? 'btn-primary' : 'btn-outline-secondary');
+      btn.innerText = idx + 1;
+      btn.onclick = () => loadQuestion(idx);
+      nav.appendChild(btn);
+    });
+  }
+
+  function runCode() {
+    var code = editor.getValue();
+    var lang = document.getElementById('language-select').value;
+    var outputDiv = document.getElementById('output-console');
+
+    outputDiv.innerHTML = "Executing...";
+
+    fetch('/run_code', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        test_id: testId,
+        qid: questions[currentQIndex].qid,
+        code: code,
+        language: lang
+      })
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) {
+          outputDiv.innerHTML = `<span class="text-danger">${data.error}</span>`;
+          return;
+        }
+        if (data.status === 'Error') {
+          outputDiv.innerHTML = `<span class="text-danger">${data.output}</span>`;
+          return;
+        }
+
+        // Show test cases
+        var html = "";
+        if (data.results) {
+          data.results.forEach(res => {
+            var cls = res.status === 'Passed' ? 'passed' : 'failed';
+            var details = "";
+
+            if (res.isHidden) {
+              details = `<br><em>Hidden Test Case - Details Locked 🔒</em>`;
+              if (res.status === 'Failed') {
+                // details += `<br><span class="text-danger">Failed</span>`; 
+              }
+            } else {
+              // Always show details for visible test cases
+              details = `<div class="mt-1 small">
+                           <strong>Input:</strong> ${res.input}<br>
+                           <strong>Expected:</strong> ${res.expected}<br>
+                           <strong>Actual:</strong> ${res.actual}
+                         </div>`;
+            }
+
+            html += `<div class="test-case-result ${cls}">
+                        <strong>Test Case ${res.test_case}:</strong> ${res.status}
+                        ${details}
+                    </div>`;
+          });
+        }
+
+        if (data.all_passed) {
+          html += `<div class="alert alert-success mt-2">All Test Cases Passed!</div>`;
+        }
+        outputDiv.innerHTML = html;
+      })
+      .catch(err => {
+        outputDiv.innerHTML = `<span class="text-danger">Error: ${err}</span>`;
+      });
+  }
+
+  function submitExam() {
+    // Save current question
+    if (questions[currentQIndex]) {
+      var q = questions[currentQIndex];
+      if (!userCodes[q.qid]) userCodes[q.qid] = {};
+
+      if (q.type === 'aptitude') {
+        var selected = document.querySelector('input[name="aptitude-opt"]:checked');
+        if (selected) userCodes[q.qid]['answer'] = selected.value;
+      } else {
+        userCodes[q.qid][lastLanguage] = editor.getValue();
+      }
+    }
+
+    var answers = [];
+    questions.forEach(q => {
+      var ans = { qid: q.qid, type: q.type || 'coding' };
+      if (q.type === 'aptitude') {
+        ans.answer = (userCodes[q.qid] && userCodes[q.qid]['answer']) ? userCodes[q.qid]['answer'] : "";
+      } else {
+        var code = "";
+        var lang = "python";
+        if (userCodes[q.qid]) {
+          if (userCodes[q.qid]['python']) { code = userCodes[q.qid]['python']; lang = 'python'; }
+          else if (userCodes[q.qid]['java']) { code = userCodes[q.qid]['java']; lang = 'java'; }
+          else if (userCodes[q.qid]['c']) { code = userCodes[q.qid]['c']; lang = 'c'; }
+          else if (userCodes[q.qid]['cpp']) { code = userCodes[q.qid]['cpp']; lang = 'cpp'; }
+        }
+        ans.code = code;
+        ans.language = lang;
+        ans.input = "";
+        ans.status = "Submitted";
+      }
+      answers.push(ans);
+    });
+
+    // Capture Chat History
+    var chatBox = document.getElementById('ai-chat-box');
+    var chatHistory = [];
+    if (chatBox) {
+      chatBox.querySelectorAll('.ai-message, .user-message').forEach(msg => {
+        chatHistory.push({
+          role: msg.classList.contains('ai-message') ? 'ai' : 'user',
+          text: msg.innerText
+        });
+      });
+    }
+
+    // Stop recording
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+      mediaRecorder.onstop = function () {
+        uploadVideo().then(finishSubmission);
+      };
+      mediaRecorder.stop();
+    } else {
+      finishSubmission();
+    }
+
+    function finishSubmission() {
+      // Submit Answers
+      fetch('/submit_practical', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          test_id: testId,
+          answers: answers
+        })
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'Success' || data.status === 'success') {
+            // Also submit conversation
+            return fetch('/save_conversation', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                test_id: testId,
+                chat_history: chatHistory
+              })
+            }).then(() => {
+              alert("Exam Submitted Successfully!");
+              window.location.href = data.redirect_url || "{{ url_for('student_index') }}";
+            });
+          } else {
+            alert("Error submitting exam: " + data.message);
+          }
+        })
+        .catch(err => {
+          console.error("Submission error:", err);
+          // alert("Network Error: " + err);
+          window.location.href = "{{ url_for('student_index') }}";
+        });
+    }
+  }
+
+
+
+  // Disable copy paste
+  // $(document).ready(function () {
+  //   $('body').bind('select cut copy paste', function (e) {
+  //     e.preventDefault();
+  //   });
+  //   $("body").on("contextmenu", function (e) {
+  //     return false;
+  //   });
+  // });
+
+  // --- AI INTERVIEWER LOGIC ---
+  var recognition;
+  var synth = window.speechSynthesis;
+  var interviewState = "INIT"; // INIT, INTRODUCTION, FOLLOW_UP, etc.
+  var appState = "IDLE"; // IDLE, LISTENING, SPEAKING, PROCESSING
+
+  function toggleChat() {
+    var sidebar = document.getElementById('ai-sidebar');
+    var body = document.body;
+    sidebar.classList.toggle('collapsed');
+
+    // Toggle body class for margin shift
+    if (sidebar.classList.contains('collapsed')) {
+      body.classList.remove('sidebar-open');
+    } else {
+      body.classList.add('sidebar-open');
+    }
+  }
+
+</script>
+
+<!-- Initial Start Modal -->
+<div id="start-exam-modal"
+  style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; display:flex; flex-direction:column; justify-content:center; align-items:center; color:white;">
+  <h1>Coding Exam & AI Interview</h1>
+  <p class="lead">The AI Interviewer will guide you through the exam.</p>
+  <button class="btn btn-lg btn-success mt-4" onclick="initiateExam()">🚀 Start Interview</button>
+</div>
+
+<script>
+  // Ensure we don't have nested scripts or broken tags
+
+  function initiateExam() {
+    document.getElementById('start-exam-modal').style.display = 'none';
+
+    // Open Sidebar
+    var sidebar = document.getElementById('ai-sidebar');
+    if (sidebar) {
+      sidebar.classList.remove('collapsed');
+      document.body.classList.add('sidebar-open');
+    }
+
+    // Start Session (User has interacted, so audio will play)
+    startBackendSession();
+  }
+
+  function startBackendSession() {
+    fetch('/interview/start', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ test_id: testId })
+    })
+      .then(r => r.json())
+      .then(data => {
+        interviewState = data.state;
+        if (data.message) {
+          handleAIResponse(data.message);
+        }
+      })
+      .catch(console.error);
+  }
+
+  function speakText(text) {
+    if (synth.speaking) synth.cancel();
+    var utterThis = new SpeechSynthesisUtterance(text);
+    var voices = synth.getVoices();
+    // Try to find a good English voice
+    var enVoice = voices.find(v => v.lang.startsWith('en') && v.name.includes('Google US English'));
+    if (!enVoice) enVoice = voices.find(v => v.lang.startsWith('en'));
+    if (enVoice) utterThis.voice = enVoice;
+    synth.speak(utterThis);
+  }
+
+
+  // Clean up any other duplicate startBackendSession if exists below
+
+
+  function handleInputKey(event) {
+    if (event.key === 'Enter') {
+      sendTextResponse();
+    }
+  }
+
+  function sendTextResponse() {
+    var input = document.getElementById('candidate-input');
+    var text = input.value.trim();
+    if (text.length > 0) {
+      addMessage('user', text);
+      input.value = "";
+
+      updateStatus("AI is thinking...");
+
+      var currentQid = questions[currentQIndex] ? questions[currentQIndex].qid : null;
+
+      fetch('/interview/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ test_id: testId, user_input: text, qid: currentQid })
+      })
+        .then(r => r.json())
+        .then(data => {
+          interviewState = data.state;
+          handleAIResponse(data.message);
+          updateStatus("Ready");
+        })
+        .catch(e => {
+          console.error(e);
+          updateStatus("Error: " + e.message);
+        });
+    }
+  }
+
+  function submitCodeForReview() {
+    var code = editor.getValue();
+    if (!code || code.trim().length < 5) { alert("Please write some code before submitting!"); return; }
+    addMessage("user", "📝 Submitted Code for Review"); updateStatus("AI Analyzing Code..."); var
+      currentQid = questions[currentQIndex] ? questions[currentQIndex].qid : null; fetch('/interview/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+          test_id: testId,
+          user_input: "I have submitted my code.", code: code, qid: currentQid
+        })
+      }).then(r => r.json())
+        .then(data => {
+          interviewState = data.state;
+          handleAIResponse(data.message);
+          updateStatus("Ready");
+        })
+        .catch(console.error);
+  }
+
+  function handleAIResponse(message) {
+    addMessage("ai", message);
+    speakText(message);
+  }
+
+  function addMessage(role, text) {
+    var box = document.getElementById('ai-chat-box');
+    var div = document.createElement('div');
+    div.className = role === 'user' ? "user-message" : "ai-message";
+
+    // Convert newlines to <br> for AI messages
+    if (role === 'ai') {
+      text = text.replace(/\n/g, '<br>');
+      // Basic markdown formatting if needed (bold)
+      text = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+    }
+
+    div.innerHTML = text; // Use innerHTML for formatting
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function updateStatus(text) {
+    var el = document.getElementById('status-text');
+    if (el) el.innerText = text;
+  }
+
+  // Ensure voices loaded (optional, good to keep for potential TTS future use)
+  window.speechSynthesis.onvoiceschanged = function () {
+    window.speechSynthesis.getVoices();
+  };
+
+</script>
+{% endblock %}

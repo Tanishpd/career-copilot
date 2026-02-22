@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI ATS Score Calculator - MyProctor.ai</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-light: #f3f4f6;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-light);
+            min-height: 100vh;
+            color: #1f2937;
+        }
+
+        .navbar-custom {
+            background: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 1rem 2rem;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .card-custom {
+            background: white;
+            border-radius: 16px;
+            border: none;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform 0.2s;
+        }
+
+        .input-area {
+            height: 250px;
+            border-radius: 12px;
+            border: 2px dashed #e5e7eb;
+            padding: 1rem;
+            resize: none;
+            background: #fafafa;
+            transition: border-color 0.2s;
+        }
+
+        .input-area:focus {
+            border-color: var(--primary);
+            background: white;
+            outline: none;
+        }
+
+        /* Score Circle */
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary) 0%, #e5e7eb 0%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            position: relative;
+        }
+
+        .score-inner {
+            width: 130px;
+            height: 130px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .score-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .score-label {
+            font-size: 0.875rem;
+            color: var(--secondary);
+            font-weight: 500;
+        }
+
+        /* Feedback Items */
+        .feedback-item {
+            padding: 1rem;
+            border-radius: 8px;
+            background: #f8fafc;
+            border-left: 4px solid var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .feedback-item.positive {
+            border-left-color: var(--success);
+            background: #f0fdf4;
+        }
+
+        .feedback-item.warning {
+            border-left-color: var(--warning);
+            background: #fffbeb;
+        }
+
+        .feedback-item.negative {
+            border-left-color: var(--danger);
+            background: #fef2f2;
+        }
+
+        .loader {
+            display: none;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-custom d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <a href="/student_dashboard" class="btn btn-light btn-sm rounded-circle"><i
+                    class="fas fa-arrow-left"></i></a>
+            <h5 class="mb-0 fw-bold text-primary">ATS Score Calculator</h5>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-primary rounded-pill">AI Powered</span>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="row g-4">
+            <!-- Input Section -->
+            <div class="col-lg-7">
+                <div class="card-custom">
+                    <h5 class="fw-bold mb-3"><i class="fas fa-file-upload me-2 text-primary"></i>Upload Resume</h5>
+                    <div class="mb-4">
+                        <label class="form-label text-muted small">Upload PDF or Word Document (Max 5MB)</label>
+                        <input type="file" class="form-control form-control-lg" id="resumeFile"
+                            accept=".pdf,.docx,.doc,.txt">
+                    </div>
+
+                    <div class="text-center text-muted my-3">- OR -</div>
+
+                    <h5 class="fw-bold mb-3"><i class="fas fa-file-alt me-2 text-primary"></i>Paste Resume Content</h5>
+                    <p class="text-muted small mb-3">Paste your resume text below if you don't have a file.</p>
+                    <textarea id="resumeText" class="form-control input-area mb-4"
+                        placeholder="Paste your resume text here..."></textarea>
+
+                    <h5 class="fw-bold mb-3"><i class="fas fa-briefcase me-2 text-primary"></i>Job Description
+                        (Optional)</h5>
+                    <p class="text-muted small mb-3">Paste the job description you are targeting to get a relevance
+                        score.</p>
+                    <textarea id="jobDesc" class="form-control input-area" style="height: 150px;"
+                        placeholder="Paste job description here..."></textarea>
+
+                    <div class="d-flex justify-content-end mt-4">
+                        <button class="btn btn-primary px-4 py-2 fw-bold" onclick="calculateScore()">
+                            <span id="btnText">Analyze Resume</span>
+                            <div id="btnLoader" class="loader ms-2"></div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Result Section -->
+            <div class="col-lg-5">
+                <!-- ... -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        async function calculateScore() {
+            const fileInput = document.getElementById('resumeFile');
+            const resumeText = document.getElementById('resumeText').value.trim();
+            const jobDesc = document.getElementById('jobDesc').value.trim();
+
+            if (fileInput.files.length === 0 && !resumeText) {
+                Swal.fire("Error", "Please upload a resume file OR paste the text!", "error");
+                return;
+            }
+
+            // UI Loading State
+            const btn = document.querySelector('button');
+            const btnText = document.getElementById('btnText');
+            const loader = document.getElementById('btnLoader');
+            const resultCard = document.getElementById('resultCard');
+
+            btn.disabled = true;
+            btnText.innerText = "Analyzing...";
+            loader.style.display = "inline-block";
+            resultCard.style.opacity = "0.6";
+
+            try {
+                // Use FormData for File Upload
+                const formData = new FormData();
+                if (fileInput.files.length > 0) {
+                    formData.append('resume_file', fileInput.files[0]);
+                } else {
+                    formData.append('resume', resumeText);
+                }
+                formData.append('job_description', jobDesc);
+
+                const response = await fetch('/api/calculate_ats_score', {
+                    method: 'POST',
+                    body: formData // No headers needed, browser sets multipart/form-data
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    renderResult(data.score, data.feedback);
+                } else {
+                    Swal.fire("Analysis Failed", data.message || "Something went wrong.", "error");
+                }
+
+            } catch (error) {
+                console.error(error);
+                Swal.fire("Error", "Failed to connect to the server.", "error");
+            } finally {
+                btn.disabled = false;
+                btnText.innerText = "Analyze Resume";
+                loader.style.display = "none";
+                resultCard.style.opacity = "1";
+                resultCard.style.pointerEvents = "auto";
+            }
+        }
+
+        function renderResult(score, feedback) {
+            // Animate Score
+            const circle = document.getElementById('scoreCircle');
+            const value = document.getElementById('scoreValue');
+            const container = document.getElementById('feedbackContainer');
+
+            value.innerText = score;
+            circle.style.background = `conic-gradient(${getScoreColor(score)} ${score}%, #e5e7eb ${score}%)`;
+
+            // Parse Feedback (Markdown to HTML simple conversion)
+            // Assuming AI returns markdown bullet points
+            let html = '<h6 class="fw-bold mb-3">Key Insights:</h6>';
+
+            // Split by newlines and format
+            const lines = feedback.split('\n');
+            lines.forEach(line => {
+                line = line.trim();
+                if (line.startsWith('*') || line.startsWith('-')) {
+                    line = line.substring(1).trim(); // Remove bullet
+                    // Detect sentiment
+                    let type = 'warning';
+                    if (line.toLowerCase().includes('good') || line.toLowerCase().includes('strong')) type = 'positive';
+                    if (line.toLowerCase().includes('missing') || line.toLowerCase().includes('weak') || line.toLowerCase().includes('error')) type = 'negative';
+
+                    html += `
+                    <div class="feedback-item ${type}">
+                        <i class="fas ${getIcon(type)} me-2"></i> ${line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}
+                    </div>
+                `;
+                } else if (line.length > 5) {
+                    html += `<p class="small text-muted mb-2">${line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</p>`;
+                }
+            });
+
+            container.innerHTML = html;
+        }
+
+        function getScoreColor(score) {
+            if (score >= 80) return 'var(--success)';
+            if (score >= 60) return 'var(--warning)';
+            return 'var(--danger)';
+        }
+
+        function getIcon(type) {
+            if (type === 'positive') return 'fa-check-circle';
+            if (type === 'negative') return 'fa-exclamation-circle';
+            return 'fa-info-circle';
+        }
+    </script>
+
+</body>
+
+</html>

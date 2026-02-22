@@ -1,0 +1,355 @@
+{% extends 'professor_dashboard.html' %}
+{% block body %}
+<style>
+    /* Embedded CSS for Create Exam Page */
+    .form-section {
+        background: #fff;
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        margin-bottom: 25px;
+    }
+
+    .form-header {
+        border-bottom: 1px solid #eee;
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+    }
+
+    .form-header h3 {
+        margin: 0;
+        color: #333;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        color: #555;
+    }
+
+    .ql-container {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .ql-item {
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: flex-start;
+        transition: background 0.2s;
+    }
+
+    .ql-item:hover {
+        background: #f9f9f9;
+    }
+
+    .ql-checkbox {
+        margin-right: 15px;
+        margin-top: 5px;
+        transform: scale(1.2);
+    }
+
+    .ql-content {
+        flex: 1;
+    }
+
+    .ql-meta {
+        font-size: 0.85rem;
+        color: #888;
+        margin-top: 5px;
+    }
+
+    .ql-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: bold;
+        color: #fff;
+        margin-right: 5px;
+    }
+
+    .badge-obj {
+        background-color: #17a2b8;
+    }
+
+    .badge-sub {
+        background-color: #ffc107;
+        color: #333;
+    }
+
+    .badge-prac {
+        background-color: #28a745;
+    }
+
+    .search-box {
+        margin-bottom: 15px;
+        position: relative;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 10px 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+    }
+
+    #selected-count {
+        font-weight: bold;
+        color: #007bff;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <form action="/submit_create_exam" method="POST" id="createExamForm">
+
+                <!-- Exam Details Section -->
+                <div class="form-section">
+                    <div class="form-header">
+                        <h3><i class="fas fa-file-alt"></i> Exam Details</h3>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label>Subject / Test Name</label>
+                            <input type="text" name="subject" class="form-control" required
+                                placeholder="e.g. Data Structures Mid-Term">
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Topic / Description</label>
+                            <input type="text" name="topic" class="form-control" required
+                                placeholder="e.g. Arrays, Linked Lists">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 form-group">
+                            <label>Start Date</label>
+                            <input type="date" name="start_date" class="form-control" required>
+                        </div>
+                        <div class="col-md-3 form-group">
+                            <label>Start Time</label>
+                            <input type="time" name="start_time" class="form-control" required>
+                        </div>
+                        <div class="col-md-3 form-group">
+                            <label>End Date</label>
+                            <input type="date" name="end_date" class="form-control" required>
+                        </div>
+                        <div class="col-md-3 form-group">
+                            <label>End Time</label>
+                            <input type="time" name="end_time" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 form-group">
+                            <label>Duration (Minutes)</label>
+                            <input type="number" name="duration" class="form-control" required min="10">
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label>Password</label>
+                            <input type="text" name="password" class="form-control" required minlength="3">
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label>Proctoring Type</label>
+                            <select name="proctor_type" class="form-control">
+                                <option value="0">Automatic AI Monitoring</option>
+                                <option value="1">Live Monitoring</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Candidate Emails Section -->
+                <div class="form-section">
+                    <div class="form-header">
+                        <h3><i class="fas fa-users"></i> Candidates</h3>
+                    </div>
+                    <div class="form-group">
+                        <label>Candidate Emails (Comma Separated)</label>
+                        <textarea name="candidate_emails" class="form-control" rows="3"
+                            placeholder="student1@example.com, student2@example.com, ..."></textarea>
+                        <small class="text-muted">Enter email addresses separated by commas.</small>
+                    </div>
+                </div>
+
+                <!-- Question Selection Section -->
+                <div class="form-section">
+                    <div class="form-header d-flex justify-content-between align-items-center">
+                        <h3><i class="fas fa-list-ul"></i> Select Questions</h3>
+                        <span id="selected-count">0 Selected</span>
+                    </div>
+
+                    <div class="search-box">
+                        <input type="text" id="questionSearch" class="search-input" placeholder="Search questions...">
+                    </div>
+
+                    <div class="form-group">
+                        <div class="custom-control custom-checkbox mb-2">
+                            <input type="checkbox" class="custom-control-input" id="selectAll">
+                            <label class="custom-control-label" for="selectAll">Select All Visible</label>
+                        </div>
+                    </div>
+
+                    <div class="ql-container" id="questionList">
+                        {% if all_questions %}
+                        {% for q in all_questions %}
+                        <div class="ql-item" data-search="{{ q.q | striptags | lower }}">
+                            <div class="ql-checkbox-wrapper">
+                                <!-- Value format: type_testID_qid (e.g. obj_T234_1) -->
+                                <input type="checkbox" name="selected_questions" class="ql-checkbox"
+                                    value="{{ q.type }}_{{ q.test_id }}_{{ q.qid }}">
+                            </div>
+                            <div class="ql-content">
+                                <div class="mb-1">
+                                    {% if q.type == 'objective' %}
+                                    <span class="ql-badge badge-obj">Objective</span>
+                                    {% elif q.type == 'subjective' %}
+                                    <span class="ql-badge badge-sub">Subjective</span>
+                                    {% elif q.type == 'practical' %}
+                                    <span class="ql-badge badge-prac">Coding</span>
+                                    {% endif %}
+                                    <span class="font-weight-bold">Marks: {{ q.marks }}</span>
+                                </div>
+                                <div class="text-dark">
+                                    <!-- Show Full Question Content -->
+                                    <div class="q-content-full">
+                                        {{ q.q | safe }}
+                                    </div>
+                                </div>
+                                <div class="ql-meta">
+                                    Original Test ID: {{ q.test_id }} | QID: {{ q.qid }}
+                                </div>
+                                <!-- Boilerplate Badges Container -->
+                                <div class="boilerplate-badges mt-2"></div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <div class="p-4 text-center text-muted">No questions found. Generate or create questions first!
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="text-center mb-5">
+                    <button type="submit" class="btn btn-primary btn-lg px-5">Create Exam & Send Invites</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Embedded JS for interactivity
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('questionSearch');
+        const questionList = document.getElementById('questionList');
+        const items = document.querySelectorAll('.ql-item');
+        const selectAllCheckbox = document.getElementById('selectAll');
+        const countDisplay = document.getElementById('selected-count');
+
+        // Search Filter
+        searchInput.addEventListener('keyup', function (e) {
+            const term = e.target.value.toLowerCase();
+            items.forEach(item => {
+                const text = item.getAttribute('data-search');
+                if (text.includes(term)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+
+        // Update Count
+        function updateCount() {
+            const checked = document.querySelectorAll('input[name="selected_questions"]:checked').length;
+            countDisplay.textContent = checked + " Selected";
+        }
+
+        // Checkbox Listener
+        questionList.addEventListener('change', function (e) {
+            if (e.target.name === 'selected_questions') {
+                updateCount();
+            }
+        });
+
+        // Select All Visible
+        selectAllCheckbox.addEventListener('change', function (e) {
+            const isChecked = e.target.checked;
+            items.forEach(item => {
+                if (item.style.display !== 'none') {
+                    const cb = item.querySelector('input[name="selected_questions"]');
+                    cb.checked = isChecked;
+                }
+            });
+            updateCount();
+        });
+
+        // Form Validation for Dates
+        document.getElementById('createExamForm').addEventListener('submit', function (e) {
+            const startDate = document.querySelector('input[name="start_date"]').value;
+            const startTime = document.querySelector('input[name="start_time"]').value;
+            const endDate = document.querySelector('input[name="end_date"]').value;
+            const endTime = document.querySelector('input[name="end_time"]').value;
+
+            const start = new Date(startDate + 'T' + startTime);
+            const end = new Date(endDate + 'T' + endTime);
+            const now = new Date();
+
+            if (start < now) {
+                alert("Start time cannot be in the past!");
+                e.preventDefault();
+                return;
+            }
+
+            if (end <= start) {
+                alert("End time must be after start time!");
+                e.preventDefault();
+                return;
+            }
+
+            // Check if at least one question is selected
+            const checked = document.querySelectorAll('input[name="selected_questions"]:checked').length;
+            if (checked === 0) {
+                alert("Please select at least one question for the exam.");
+                e.preventDefault();
+                return;
+            }
+        });
+
+        // Parse Boilerplates for Display (New Logic)
+        document.querySelectorAll('.ql-item').forEach(item => {
+            const contentDiv = item.querySelector('.q-content-full');
+            if (contentDiv) {
+                // Clone to avoid modifying displayed HTML visibly? No, just parsing hidden.
+                // We can query selector on contentDiv directly.
+                let bpDiv = contentDiv.querySelector('.boilerplates_data');
+                if (!bpDiv) bpDiv = contentDiv.querySelector('#boilerplates_data');
+
+                if (bpDiv) {
+                    try {
+                        const bps = JSON.parse(bpDiv.textContent);
+                        const badgeContainer = item.querySelector('.boilerplate-badges');
+                        if (badgeContainer) {
+                            badgeContainer.innerHTML = '<strong>Includes Boilerplates: </strong>';
+                            for (let lang in bps) {
+                                const badge = document.createElement('span');
+                                badge.className = 'badge badge-secondary mr-1';
+                                badge.textContent = lang;
+                                badgeContainer.appendChild(badge);
+                            }
+                        }
+                    } catch (err) {
+                        console.error("BP Parse Error", err);
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
