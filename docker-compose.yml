@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: interview-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - MONGO_URI=mongodb://mongo:27017/ai-interviewer
+      - JWT_SECRET=dev_secret_key_123
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    depends_on:
+      - mongo
+    networks:
+      - interview-net
+
+  frontend:
+    build: ./frontend
+    container_name: interview-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - interview-net
+
+  mongo:
+    image: mongo:latest
+    container_name: interview-mongo
+    ports:
+      - "27017:27017" # Exposed for local debugging
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - interview-net
+
+networks:
+  interview-net:
+    driver: bridge
+
+volumes:
+  mongo-data:

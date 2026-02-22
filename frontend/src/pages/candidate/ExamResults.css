@@ -1,0 +1,121 @@
+.results-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+    min-height: calc(100vh - 80px);
+}
+
+.results-header {
+    margin-bottom: 3rem;
+    background: var(--bg-secondary);
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+}
+
+.score-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+    margin-top: 2rem;
+}
+
+.score-circle {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, var(--color-primary), var(--color-secondary));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+}
+
+.sc-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+}
+
+.sc-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.sd-item {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.sd-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.result-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    transition: transform 0.2s;
+}
+
+.result-card:hover {
+    transform: translateY(-2px);
+}
+
+.result-card.perfect {
+    border-left: 5px solid #10b981;
+}
+
+.result-card.partial {
+    border-left: 5px solid #f59e0b;
+}
+
+.result-card.failed {
+    border-left: 5px solid #ef4444;
+}
+
+.rc-header {
+    padding: 1rem 1.5rem;
+    background: var(--bg-secondary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.rc-body {
+    padding: 1.5rem;
+}
+
+.rc-stats {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+}
+
+.rc-feedback {
+    background: var(--bg-primary);
+    padding: 1rem;
+    border-radius: var(--radius-sm);
+    margin-top: 1rem;
+}
+
+.rc-feedback h4 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--color-primary);
+}
+
+.results-footer {
+    text-align: center;
+    margin-top: 3rem;
+}
