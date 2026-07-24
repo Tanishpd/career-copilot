@@ -2894,11 +2894,9 @@ def calculate_ats_score():
     """
     
     try:
-        # Use simple requests call to Gemini API (reuse API Key from env/config or hardcoded for now as per previous context)
-        # Note: We should ideally load this securely, but reusing the variable from ai_interviewer context logic
-        # We'll create a temporary instance or just raw request.
-        # Let's reuse the key we saw in logs: GOOGLE_API_KEY_REMOVED
-        
+        # Raw REST call to the Gemini API. The key comes from the environment
+        # (see .env.example) — never hardcode it.
+
         api_key = os.environ["GEMINI_API_KEY"] 
         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-001:generateContent?key={api_key}"
         
