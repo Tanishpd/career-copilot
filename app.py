@@ -61,8 +61,8 @@ app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 
 app.config['MAIL_SERVER']='smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
-app.config['MAIL_USERNAME'] = 'PURGED_ROTATE_ME' # Replace with your Gmail address
-app.config['MAIL_PASSWORD'] = 'PURGED_ROTATE_ME' # Fixed spaces/typo
+app.config['MAIL_USERNAME'] = os.environ.get("MAIL_USERNAME", "")
+app.config['MAIL_PASSWORD'] = os.environ.get("MAIL_PASSWORD", "")  # Gmail app password
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
 
@@ -87,7 +87,7 @@ sess.init_app(app)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-app.secret_key= 'PURGED_ROTATE_ME'
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", os.urandom(32).hex())
 
 mysql = MySQL(app)
 
