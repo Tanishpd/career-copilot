@@ -25,6 +25,12 @@ The following were written for this project and are not part of the upstream:
 | ATS Score Checker | `ats scorcer/`, `templates/ats_calculator.html` |
 | Résumé Creator | `Resume Creator/`, `templates/resume_builder.html` |
 | Coding evaluation | `code_executor.py` |
+| AI Interview Preparer (Next.js, Azure OpenAI + Azure Speech) | `interview-preparer/` |
+
+`interview-preparer/` is a separate Next.js application (MIT licensed, see
+`interview-preparer/LICENSE`) implementing the interview-preparation module.
+It was previously a standalone repository and has been folded in here, since
+it is a component of this platform rather than a project in its own right.
 
 These are the components described in the accompanying paper,
 *Career-Copilot: An AI-Powered Recruitment and Career Preparation Platform*.

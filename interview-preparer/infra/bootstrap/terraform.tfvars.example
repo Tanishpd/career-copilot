@@ -1,0 +1,15 @@
+# =============================================================================
+# AI Tech Interview - Terraform State Bootstrap Variables
+# =============================================================================
+# Copy this file to terraform.tfvars and update with your values
+# 
+# IMPORTANT: terraform.tfvars is git-ignored - never commit subscription IDs
+# =============================================================================
+
+# Required: Your Azure Subscription ID
+subscription_id = "your-subscription-id-here"
+
+# Optional: Override defaults if needed
+# location     = "southcentralus"
+# project_name = "ai-interview"
+# environment  = "dev"
