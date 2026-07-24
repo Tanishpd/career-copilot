@@ -2899,7 +2899,7 @@ def calculate_ats_score():
         # We'll create a temporary instance or just raw request.
         # Let's reuse the key we saw in logs: GOOGLE_API_KEY_REMOVED
         
-        api_key = "GOOGLE_API_KEY_REMOVED" 
+        api_key = os.environ["GEMINI_API_KEY"] 
         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-001:generateContent?key={api_key}"
         
         payload = {

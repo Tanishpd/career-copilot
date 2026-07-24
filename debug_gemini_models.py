@@ -1,7 +1,8 @@
+import os
 import requests
 import json
 
-API_KEY = "GOOGLE_API_KEY_REMOVED"
+API_KEY = os.environ["GEMINI_API_KEY"]
 url = f"https://generativelanguage.googleapis.com/v1beta/models?key={API_KEY}"
 
 try:
