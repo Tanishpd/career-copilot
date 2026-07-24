@@ -1,0 +1,30 @@
+# Terraform files
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+.terraform/
+# Note: .terraform.lock.hcl should be committed for reproducible builds
+crash.log
+crash.*.log
+
+# Sensitive variable files
+*.tfvars
+!terraform.tfvars.example
+
+# Backend configuration (contains storage account details)
+backend.hcl
+backend.conf
+*.backend.hcl
+
+# Override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# CLI configuration
+.terraformrc
+terraform.rc
+
+# Plan files
+*.tfplan

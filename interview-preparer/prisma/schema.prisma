@@ -1,0 +1,143 @@
+// =========================================================================
+// AI Tech Interview - Prisma Schema
+// Database: SQLite (local development)
+// =========================================================================
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// =========================================================================
+// Interview Session - Main container for an interview practice
+// =========================================================================
+model InterviewSession {
+  id              String   @id @default(cuid())
+  roleTitle       String   @map("role_title")
+  companyName     String?  @map("company_name") // Optional company name
+  jobDescription  String   @map("job_description")
+  seniorityLevel  String   @map("seniority_level") // junior, mid, senior
+  status          String   @default("created") // created, in-progress, completed, cancelled
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  completedAt     DateTime? @map("completed_at")
+
+  // Relations
+  topics     InterviewTopic[]
+  questions  InterviewQuestion[]
+  responses  QuestionResponse[]
+  evaluations ResponseEvaluation[]
+
+  @@map("interview_sessions")
+}
+
+// =========================================================================
+// Interview Topic - Topics extracted from job description
+// =========================================================================
+model InterviewTopic {
+  id          String   @id @default(cuid())
+  sessionId   String   @map("session_id")
+  name        String
+  description String?
+  priority    Int      @default(1) // 1 = highest priority
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  session   InterviewSession   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  questions InterviewQuestion[]
+
+  @@map("interview_topics")
+}
+
+// =========================================================================
+// Interview Question - Generated questions for the session
+// =========================================================================
+model InterviewQuestion {
+  id               String   @id @default(cuid())
+  sessionId        String   @map("session_id")
+  topicId          String?  @map("topic_id")
+  questionNumber   Int      @map("question_number")
+  question         String
+  category         String   // technical, system-design, behavioral, problem-solving
+  difficulty       String   // junior, mid, senior
+  expectedTopics   String   @map("expected_topics") // JSON array stored as string
+  timeLimitSeconds Int      @map("time_limit_seconds")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  // Relations
+  session     InterviewSession     @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  topic       InterviewTopic?      @relation(fields: [topicId], references: [id], onDelete: SetNull)
+  responses   QuestionResponse[]
+  evaluations ResponseEvaluation[]
+
+  @@map("interview_questions")
+}
+
+// =========================================================================
+// Question Response - User's recorded response to a question
+// =========================================================================
+model QuestionResponse {
+  id              String    @id @default(cuid())
+  questionId      String    @map("question_id")
+  sessionId       String    @map("session_id")
+  status          String    @default("pending") // pending, recording, transcribing, completed, skipped
+  audioUrl        String?   @map("audio_url")
+  audioBlob       Bytes?    @map("audio_blob") // Store audio locally if offline
+  transcription   String?
+  durationSeconds Int?      @map("duration_seconds")
+  isOffline       Boolean   @default(false) @map("is_offline") // Was recorded offline?
+  syncedAt        DateTime? @map("synced_at") // When was it synced to server?
+  startedAt       DateTime? @map("started_at")
+  completedAt     DateTime? @map("completed_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  session    InterviewSession    @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  question   InterviewQuestion   @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  evaluation ResponseEvaluation?
+
+  @@unique([questionId, sessionId])
+  @@map("question_responses")
+}
+
+// =========================================================================
+// Response Evaluation - AI evaluation of a response
+// =========================================================================
+model ResponseEvaluation {
+  id              String   @id @default(cuid())
+  responseId      String   @unique @map("response_id")
+  questionId      String   @map("question_id")
+  sessionId       String   @map("session_id")
+  
+  // Scores (0-100)
+  relevanceScore        Int @map("relevance_score")
+  technicalAccuracyScore Int @map("technical_accuracy_score")
+  clarityScore          Int @map("clarity_score")
+  depthScore            Int @map("depth_score")
+  structureScore        Int @map("structure_score")
+  confidenceScore       Int @map("confidence_score")
+  overallScore          Int @map("overall_score")
+  
+  // Feedback - stored as JSON strings
+  strengths       String  // JSON array
+  improvements    String  // JSON array
+  suggestion      String
+  performanceBand String   @map("performance_band") // excellent, good, satisfactory, needs-work, poor
+  
+  createdAt       DateTime @default(now()) @map("created_at")
+  evaluatedAt     DateTime @default(now()) @map("evaluated_at")
+
+  // Relations
+  session          InterviewSession   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  questionResponse QuestionResponse   @relation(fields: [responseId], references: [id], onDelete: Cascade)
+  question         InterviewQuestion  @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@map("response_evaluations")
+}
+

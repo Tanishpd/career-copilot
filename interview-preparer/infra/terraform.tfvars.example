@@ -1,0 +1,22 @@
+# =========================================================================
+# AI Tech Interview - Terraform Variables Example
+# Copy this file to terraform.tfvars and fill in your values
+# =========================================================================
+
+# Required: Your Azure Subscription ID
+subscription_id = "your-subscription-id-here"
+
+# Optional: Customize these values (defaults shown)
+project_name           = "ai-interview"
+environment            = "dev"
+location               = "southcentralus"      # Region for non-OpenAI resources
+openai_location        = "southcentralus"      # Must have gpt-4o-mini availability
+openai_deployment_name = "gpt-4o-mini"
+openai_capacity        = 30                    # Tokens per minute (thousands)
+speech_sku             = "S0"                  # S0 = Standard pay-as-you-go (cheapest non-free)
+
+# Optional: Additional tags
+tags = {
+  Owner   = "your-name"
+  Purpose = "MVP Development"
+}
