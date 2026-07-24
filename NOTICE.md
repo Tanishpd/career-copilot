@@ -22,7 +22,7 @@ The following were written for this project and are not part of the upstream:
 | Component | Files |
 |---|---|
 | AI Interviewer (Gemini-driven, adaptive follow-ups) | `ai_interviewer.py`, `ai_routes.py`, `test_ai_interviewer.py` |
-| ATS Score Checker | `ats scorcer/`, `templates/ats_calculator.html` |
+| ATS Score Checker | `ats-scorer/`, `templates/ats_calculator.html` |
 | Résumé Creator | `Resume Creator/`, `templates/resume_builder.html` |
 | Coding evaluation | `code_executor.py` |
 | AI Interview Preparer (Next.js, Azure OpenAI + Azure Speech) | `interview-preparer/` |

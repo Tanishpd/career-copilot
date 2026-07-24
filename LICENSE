@@ -1,0 +1,65 @@
+Career-Copilot — licensing
+==========================
+
+This repository has mixed provenance, so no single licence covers all of it.
+Read this before reusing any part of it. Full detail is in NOTICE.md.
+
+
+1. Derived components — NO LICENCE GRANTED
+------------------------------------------
+
+The examination and proctoring layer — user/exam management, the Flask
+application shell, and the webcam proctoring pipeline (camera.py,
+face_detector.py, face_landmarks.py, verify_face.py, and the associated
+templates and static assets) — is derived from MyProctor.ai by Narender Kumar:
+
+    https://github.com/narender-rk10/MyProctor.ai-AI-BASED-SMART-ONLINE-EXAMINATION-PROCTORING-SYSYTEM
+
+That upstream project carries no explicit licence. Under copyright law the
+default is that all rights are reserved, which means the author of this
+repository holds no rights to sublicense those portions and does not purport
+to grant any. They are present here for academic and research purposes.
+
+If you want to reuse or redistribute those portions, contact the upstream
+author for permission. Do not rely on this repository as your grant of rights.
+
+
+2. Original components — MIT
+----------------------------
+
+The components written for this project, listed in the "Career-Copilot
+additions" table of NOTICE.md, are offered under the MIT licence below.
+`interview-preparer/` additionally carries its own MIT LICENSE file.
+
+MIT License
+
+Copyright (c) 2026 Tanish P D
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
+3. Third-party assets
+---------------------
+
+models/ contains OpenCV's pre-trained face detection models, distributed by
+the OpenCV project under Apache 2.0.
+
+sample_face.jpg is the "astronaut" image from scikit-image: a NASA portrait of
+Eileen Collins, in the public domain. It replaces the Lena/Lenna image, which
+the IEEE Computer Society stopped accepting in submissions from 1 April 2024.
