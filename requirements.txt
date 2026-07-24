@@ -39,6 +39,15 @@ nltk==3.10.0
 python-docx==1.1.2
 pdfminer.six==20231228
 
+# ── Config / sessions / AI SDK ───────────────────────────────────────────
+# These are imported at module load in app.py and friends but were missing, so
+# `pip install -r requirements.txt` followed by `python app.py` raised
+# ImportError before the app could start.
+python-dotenv==1.2.2
+Flask-Session==0.8.0
+google-generativeai==0.8.6
+requests==2.34.2
+
 # ── Misc ─────────────────────────────────────────────────────────────────
 stripe==11.4.1
 coolname==2.2.0

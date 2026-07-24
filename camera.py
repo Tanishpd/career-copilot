@@ -1,3 +1,4 @@
+import os
 from face_detector import get_face_detector, find_faces
 from face_landmarks import get_landmark_model, detect_marks
 import tensorflow as tf
@@ -6,7 +7,15 @@ import cv2
 import base64
 from PIL import Image
 from io import BytesIO   
-from gaze_tracking import GazeTracking
+# GazeTracking lives in the gaze_tracking_repo submodule (antoinelame/GazeTracking,
+# MIT). Initialise it with `git submodule update --init`. Left optional so the
+# app can start without the proctoring extras rather than dying on import.
+try:
+    from gaze_tracking import GazeTracking
+    GAZE_AVAILABLE = True
+except ImportError:
+    GazeTracking = None
+    GAZE_AVAILABLE = False
 from tensorflow.keras import Model
 from tensorflow.keras.layers import (
     Add,
@@ -25,7 +34,7 @@ from time import time
 import math
 import threading
 
-gaze = GazeTracking()
+gaze = GazeTracking() if GAZE_AVAILABLE else None
 # Global lock for all thread-unsafe operations (CV, ML models)
 cv_lock = threading.Lock()
 
@@ -242,7 +251,17 @@ def YoloV3(size=None, channels=3, anchors=yolo_anchors,
     return Model(inputs, outputs, name='yolov3')
     
 yolo = YoloV3()
-load_darknet_weights(yolo, 'models/yolov3.weights') 
+# yolov3.weights is ~236 MB and is not committed. Fetch it with
+# `python download_yolo_weights.py` (or from https://pjreddie.com/media/files/yolov3.weights).
+# Without it the person/phone detection is disabled but the app still starts.
+_WEIGHTS = 'models/yolov3.weights'
+if os.path.exists(_WEIGHTS):
+    load_darknet_weights(yolo, _WEIGHTS)
+    YOLO_AVAILABLE = True
+else:
+    print(f"[camera] {_WEIGHTS} not found — object detection disabled. "
+          f"Run download_yolo_weights.py to enable it.")
+    YOLO_AVAILABLE = False 
 
 def get_2d_points(img, rotation_vector, translation_vector, camera_matrix, val):
     """Return the 3D points present as 2D for making annotation box"""

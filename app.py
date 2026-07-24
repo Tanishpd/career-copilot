@@ -1848,44 +1848,6 @@ def submit_practical():
 		print(f"Error submitting practical: {e}")
 		return jsonify({"status": "Error", "message": str(e)})
 
-# Old POST handler in give_test for practical can remain or be ignored if we route via AJAX.
-# But we need to make sure we don't break anything. 
-# The lines below 1642 were the old handler. We can remove them or leave them as fallback (though they use different form fields).
-# I will replace the ELIF block's POST part with a pass or comment out, BUT wait, 
-# 'give_test' route handles GET to render. The POST part was legacy.
-# I am REPLACING the POST part of 'practical' in 'give_test' with the NEW route definition?
-# No, I should add the NEW route separately and remove the POST logic from 'give_test' if it conflicts, 
-# OR just let 'give_test' handle GET and ignore POST if we use AJAX.
-# The user's code had `elif request.method == 'POST':` inside `give_test`. 
-# I will remove that block and insert the new function.
-
-# Actually, I am editing `give_test` function content. 
-# I should NOT nest `submit_practical` inside `give_test`.
-# I should delete the POST logic from `give_test` practical section and add `submit_practical` as a global function.
-# The `replace_file_content` will target lines 1642-1664 to REMOVE them.
-# Then I will add `@app.route` somewhere else? 
-# OR I can just leave `give_test` as GET only for practical, and add `submit_practical` route separately.
-
-# I will replace lines 1642-1664 with nothing (or check if I can just close the function).
-# And then append the new route after `give_test`. 
-# Wait, I cannot append easily with `replace_file_content` unless I target a specific place.
-# I will replace the POST block with a comment, and then insert the new route BEFORE `give_test` or AFTER.
-# Actually, I'll just change the validation in `give_test` to ignore POST for practical?
-# The code structure is:
-# if test_type == object: ...
-# elif test_type == subject: ...
-# elif test_type == practical:
-#    if GET: ...
-#    elif POST: ...
-
-# I will replace lines 1642-1664 with a simple pass or comment, 
-# AND THEN ADD request handler? No, I need a separate route.
-
-# Strategy:
-# 1. Clear the POST logic in `give_test` (lines 1642-1664).
-# 2. Add `submit_practical` route at the end of file or before `give_test`.
-# I'll do step 1 now.
-
 @app.route('/randomize', methods = ['POST'])
 def random_gen():
 	if request.method == "POST":

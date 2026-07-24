@@ -34,3 +34,18 @@ it is a component of this platform rather than a project in its own right.
 
 These are the components described in the accompanying paper,
 *Career-Copilot: An AI-Powered Recruitment and Career Preparation Platform*.
+
+## Gaze tracking
+
+`gaze_tracking_repo/` is a git submodule pointing at **GazeTracking** by
+Antoine Lamé (MIT licensed):
+
+> https://github.com/antoinelame/GazeTracking
+
+Initialise it with `git submodule update --init --recursive`.
+
+## Model weights
+
+`models/yolov3.weights` (~236 MB) is not committed. Fetch it with
+`python download_yolo_weights.py`. The other files in `models/` are OpenCV's
+pre-trained face detection models, distributed under Apache 2.0.

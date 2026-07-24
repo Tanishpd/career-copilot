@@ -7,8 +7,7 @@ import os
 HOST = 'localhost'
 USER = 'root'
 PORT = 3306
-PASSWORD = os.environ.get("MYSQL_PASSWORD", "") # Using the App Password? NO. Wait.
-# User changed app.py config for MAIL, but DB config is different.
+PASSWORD = os.environ.get("MYSQL_PASSWORD", "") 
 # Check app.py for DB config.
 # DB credentials come from the environment (see .env.example).
 
