@@ -1,23 +1,48 @@
-Flask_WTF==0.14.3
-pandas==1.1.5
-six==1.12.0
-tensorflow==2.12.1
-WTForms_Components==0.10.5
-stripe==2.27.0
-deepface==0.0.49
-Werkzeug==3.1.6
-opencv_contrib_python==4.8.1.78
-WTForms==2.3.3
-Flask_MySQLdb==0.2.0
+# Career-Copilot — Python dependencies
+#
+# TensorFlow is pinned to 2.15.1, the last release that defaults to Keras 2.
+# camera.py builds a YOLOv3 model with the Keras functional API; TF 2.16+
+# switches to Keras 3 and would break it. The highest patch level required
+# across the 402 tensorflow advisories was 2.12.1, so 2.15.1 clears all of
+# them without taking on Keras 3.
+#
+# RUNTIME: Python 3.9–3.11. TF 2.15 publishes no 3.12+ wheels.
+#   python3.11 -m venv venv && source venv/bin/activate
+#
+# These pins are mutually consistent — see MIGRATION.md. Bumping any one of
+# them in isolation can break the set (e.g. TF 2.12+ requires numpy >= 1.23.5,
+# and Flask 3 requires Flask-WTF >= 1.0).
+
+# ── Web framework ────────────────────────────────────────────────────────
 Flask==3.1.3
-Flask_Mail==0.9.1
-matplotlib==3.3.3
-Flask_Cors==6.0.0
-numpy==1.16.0
-wget==3.2
-python_docx==0.8.10
+Werkzeug==3.1.6
+Flask-Cors==6.0.0
+Flask-WTF==1.2.2
+WTForms==3.2.1
+WTForms-Components==0.11.0
+Flask-Mail==0.10.0
+Flask-MySQLdb==2.0.0
+
+# ── ML / vision ──────────────────────────────────────────────────────────
+tensorflow==2.15.1
+deepface==0.0.93
+opencv-contrib-python==4.8.1.78
+dlib==19.24.6
+numpy==1.26.4
+
+# ── Data / documents ─────────────────────────────────────────────────────
+pandas==2.0.3
+Pillow==11.3.0
 nltk==3.10.0
-coolname==1.1.0
-object_detection==0.0.3
-Pillow==12.3.0
+python-docx==1.1.2
 pdfminer.six==20231228
+
+# ── Misc ─────────────────────────────────────────────────────────────────
+stripe==11.4.1
+coolname==2.2.0
+six==1.17.0
+wget==3.2
+
+# Removed — not imported anywhere in the codebase:
+#   object_detection==0.0.3   (abandoned/squatted PyPI package)
+#   matplotlib==3.3.3
