@@ -1,9 +1,10 @@
+import os
 import MySQLdb
 
 HOST = 'localhost'
 USER = 'root'
 PORT = 3306
-PASSWORD = 'MYSQL_PASSWORD_PURGED_ROTATE_ME'
+PASSWORD = os.environ.get("MYSQL_PASSWORD", "")
 DB_NAME = 'quizapp'
 
 try:

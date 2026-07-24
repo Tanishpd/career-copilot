@@ -52,10 +52,10 @@ GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 genai.configure(api_key=GOOGLE_API_KEY)
 ai_interviewer = AIInterviewer(GOOGLE_API_KEY)
 
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_HOST'] = os.environ.get("MYSQL_HOST", "localhost")
+app.config['MYSQL_USER'] = os.environ.get("MYSQL_USER", "root")
 app.config['MYSQL_PORT'] = 3306
-app.config['MYSQL_PASSWORD'] = 'MYSQL_PASSWORD_PURGED_ROTATE_ME'
+app.config['MYSQL_PASSWORD'] = os.environ.get("MYSQL_PASSWORD", "")
 app.config['MYSQL_DB'] = 'quizapp'
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 

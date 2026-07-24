@@ -7,12 +7,12 @@ import os
 HOST = 'localhost'
 USER = 'root'
 PORT = 3306
-PASSWORD = 'PURGED_ROTATE_ME' # Using the App Password? NO. Wait.
+PASSWORD = os.environ.get("MYSQL_PASSWORD", "") # Using the App Password? NO. Wait.
 # User changed app.py config for MAIL, but DB config is different.
 # Check app.py for DB config.
-# Step 35: User changed DB password to 'MYSQL_PASSWORD_PURGED_ROTATE_ME'.
+# DB credentials come from the environment (see .env.example).
 
-DB_PASSWORD = 'MYSQL_PASSWORD_PURGED_ROTATE_ME'
+DB_PASSWORD = os.environ.get("MYSQL_PASSWORD", "")
 DB_NAME = 'quizapp'
 
 SQL_FILE_PATH = os.path.join("DB", "quizappstructure.sql")

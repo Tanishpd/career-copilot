@@ -1,3 +1,4 @@
+import os
 
 import MySQLdb
 import sys
@@ -7,7 +8,7 @@ try:
     db = MySQLdb.connect(
         host='localhost',
         user='root',
-        passwd='MYSQL_PASSWORD_PURGED_ROTATE_ME',
+        passwd=os.environ.get("MYSQL_PASSWORD", ""),
         db='quizapp',
         port=3306
     )
@@ -22,7 +23,7 @@ except ImportError:
         db = mysql.connector.connect(
             host='localhost',
             user='root',
-            passwd='MYSQL_PASSWORD_PURGED_ROTATE_ME',
+            passwd=os.environ.get("MYSQL_PASSWORD", ""),
             database='quizapp',
             port=3306
         )

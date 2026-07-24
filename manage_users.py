@@ -1,3 +1,4 @@
+import os
 
 import MySQLdb
 import sys
@@ -6,7 +7,7 @@ import sys
 HOST = 'localhost'
 USER = 'root'
 PORT = 3306
-PASSWORD = 'MYSQL_PASSWORD_PURGED_ROTATE_ME' # Based on user's update
+PASSWORD = os.environ.get("MYSQL_PASSWORD", "") # Based on user's update
 DB_NAME = 'quizapp'
 
 def check_and_reset_users():
