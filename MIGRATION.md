@@ -23,7 +23,7 @@ proctoring pipeline.
 
 ### Runtime requirement
 
-TF 2.15 publishes no wheels for Python 3.12+. **Use Python 3.9–3.11:**
+TF 2.15 publishes no wheels for Python 3.12+. **Use Python 3.10–3.11** (TF 2.15 caps the top, Pillow 12 the bottom):
 
 ```bash
 python3.11 -m venv venv && source venv/bin/activate
@@ -71,8 +71,13 @@ this codebase. `@app.before_request` (app.py:103) is still supported.
 ## interview-preparer (Node)
 
 - `next` 16.0.10 → 16.2.11 (62 alerts)
-- Transitive fixes pinned via `pnpm.overrides`: `postcss >=8.5.12`,
-  `sharp >=0.35.0`, `find-my-way >=9.7.0`
+- 16 transitive fixes pinned via `pnpm.overrides` — these have no direct
+  upgrade path because nothing in `dependencies` pulls them in directly:
+  `postcss`, `sharp`, `find-my-way`, `tar`, `ws`, `minimatch`, `picomatch`,
+  `brace-expansion`, `ajv`, `flatted`, `effect`, `defu`, `qs`, `form-data`,
+  `js-yaml`, `@babel/core`.
+  Remove an override once the parent package ships a version that no longer
+  needs it — leaving them forever pins you to versions upstream may drop.
 - `eslint` held at `^9` and `typescript` at `^5` — `--latest` had pushed them to
   10.x/7.x, breaking peer ranges for `eslint-plugin-import` and `next`.
 
